@@ -8,10 +8,10 @@ public:
 	Demo(void);
 	~Demo(void);
 
-	int ReqLimitOrder(AccountNo user, NQ::LimitedOrder order);
-	int ReqCancelLimitOrder(AccountNo user, NQ::CancelOrder order);
-	int ReqOrderQuery(AccountNo user, NQ::OrderQuery query);
-	int ReqFundPosQuery(AccountNo user, NQ::FundPosQuery query);
+	int ReqLimitOrder(AccountNo user, NQ::LimitedOrder& order);
+	int ReqCancelLimitOrder(AccountNo user, NQ::CancelOrder& order);
+	int ReqOrderQuery(AccountNo user, NQ::OrderQuery& query);
+	int ReqFundPosQuery(AccountNo user, NQ::FundPosQuery& query);
 
 	int OnRespLimitOrder(AccountNo user, NQ::OrderResponse response);
 	int OnRespExecuteLimitOrder(AccountNo user, NQ::ExecuteResponse response);

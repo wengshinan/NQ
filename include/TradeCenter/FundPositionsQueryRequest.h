@@ -8,7 +8,7 @@
 
 namespace NQ
 {
-	class FundPositionsQueryRequest : public FIX::Message
+	class FundPositionsQueryRequest : public FIX42::Message
 	{
 	public:
 		class NoPositions: public FIX::Group
@@ -29,20 +29,25 @@ namespace NQ
 	public:
 		FundPositionsQueryRequest() : Message(MsgType()) {}
 		FundPositionsQueryRequest(const FIX::Message& m) : Message(m) {}
+		FundPositionsQueryRequest(const Message& m) : Message(m) {}
 		FundPositionsQueryRequest(const FundPositionsQueryRequest& m) : Message(m) {}
 		static FIX::MsgType MsgType() { return FIX::MsgType(MsgType_UAN); }
 
+		/*
 		FundPositionsQueryRequest(
-			const FIX::PosReqID& aPosReqID,
-			const FIX::PosReqType& aPosReqType )
-			: Message(MsgType())
+		const FIX::PosReqID& aPosReqID,
+		const FIX::PosReqType& aPosReqType )
+		: Message(MsgType())
 		{
-			set(aPosReqID);
-			set(aPosReqType);
+		set(aPosReqID);
+		set(aPosReqType);
 		}
-		FundPositionsQueryRequest(FundPosQuery & query){
+		*/
+		FundPositionsQueryRequest(FundPosQuery& query): Message(MsgType()){
 			query.id = GenerateUniqueID();
-			FundPositionsQueryRequest(query.id,query.type);
+			//FundPositionsQueryRequest(query.id,query.type);
+			set(query.id);
+			set(query.type);
 			query.response = TradeRespBase(RespCode::SUCC,"");
 		}
 
@@ -56,7 +61,7 @@ namespace NQ
 		{
 			// 消息类型
 			FIX::MsgType msgType;
-			if (!message.getFieldIfSet(msgType))
+			if (!message.getHeader().getFieldIfSet(msgType))
 			{
 				throw NQ::LackOfFieldError("MsgType 35");
 			}
@@ -104,18 +109,19 @@ namespace NQ
 				FundPosQueryResponse response(rptId.getValue(),posReqType.getValue(),RespCode::FAIL,description);
 				return response;
 			}
-			// 股份group数量
-			FIX::NoPositions posNum;
-			if (!message.getFieldIfSet(posNum))
-			{
-				throw NQ::LackOfFieldError("NoPositions 702");
-			}
+
 			Positions positions;
 			Amounts amounts;
 			//EnumParser<PositionType>* posParser = new EnumParser<PositionType>();
 
 			if (posReqType == FIX::PosReqType_POSITIONS)
 			{
+				// 股份group数量
+				FIX::NoPositions posNum;
+				if (!message.getFieldIfSet(posNum))
+				{
+					throw NQ::LackOfFieldError("NoPositions 702");
+				}
 				NQ::FundPositionsQueryRequest::NoPositions repeatingPosItem;
 				EnumParser<PositionType> posParser;
 				if (posNum.getValue() != 0)
@@ -138,7 +144,7 @@ namespace NQ
 				FIX::NoPosAmt posAmtNum;
 				if (!message.getFieldIfSet(posAmtNum))
 				{
-					throw NQ::LackOfFieldError("NoPosAmt 702");
+					throw NQ::LackOfFieldError("NoPosAmt 753");
 				}
 				NQ::FundPositionsQueryRequest::NoPosAmts repeatingPosAmtItem;
 				//EnumParser<PosAmtType>* posAmtParser = new EnumParser<PosAmtType>();

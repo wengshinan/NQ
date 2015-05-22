@@ -17,6 +17,7 @@ namespace NQ{
 			FIX::TransactTime()){
 				cancel.orderId = this->getField(FIX::FIELD::ClOrdID);
 				cancel.response = TradeRespBase(RespCode::SUCC,"");
+				set(FIX::OrderQty(cancel.num));
 		}
 
 		// 生成撤单回报
@@ -25,7 +26,7 @@ namespace NQ{
 		{
 			// 消息类型
 			FIX::MsgType msgType;
-			if (!message.getFieldIfSet(msgType))
+			if (!message.getHeader().getFieldIfSet(msgType))
 			{
 				throw NQ::LackOfFieldError("MsgType 35");
 			}

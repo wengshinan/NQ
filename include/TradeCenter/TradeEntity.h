@@ -65,6 +65,7 @@ namespace NQ{
 	// 回报种类
 	enum RespType
 	{
+		OrderApplyingType,				//报单待确认
 		OrderConfirmType,				//报单确认
 		OrderRejectType,				//报单拒绝
 		OrderExecuteType,				//报单回报
@@ -250,10 +251,12 @@ namespace NQ{
 		StockCode		stock;				//证券代码
 		TradeRespBase	response;			//查询请求情况，应用端发起情况，与请求结果无关
 		OrderQuery(
+			OrderId orderId,
 			TradeSide side,
 			StockCode stock)
 			:side(side),
-			stock(stock){}
+			stock(stock),
+			orderId(orderId){}
 		OrderQuery(){}
 	};
 
@@ -296,10 +299,8 @@ namespace NQ{
 		FundPosReqType		type;			//查询种类，股份0，资金9
 		TradeRespBase	response;			//查询请求情况，应用端发起情况，与请求结果无关
 		FundPosQuery(
-			FundPosReqId id,
 			FundPosReqType type)
-			:id(id),
-			type(type){}
+			:type(type){}
 		FundPosQuery(){}
 	};
 

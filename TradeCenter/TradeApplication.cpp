@@ -105,69 +105,76 @@ void NQ::TradeApplication::fromApp( const FIX::Message &message, const FIX::Sess
 {
 	initSessionLog(sessionID);
 
-	g_log->onIncoming(__FUNCTION__);
-	g_log->onIncoming(message.toString());
-
-	if (!isRespCorresponant(message))
-	{
-		throw NQ::NotCorrespondingError();
-	}
-	// 需要多线程操作吗？
-	// 返回报单回报赋值
-	RespType respType = getRespType(message);
-	switch(respType){
-	case RespType::OrderConfirmType:
-	case RespType::OrderRejectType:
+	//g_log->onIncoming(__FUNCTION__);
+	//g_log->onIncoming(message.toString());
+	try{
+		if (!isRespCorresponant(message))
 		{
-			OrderResponse orderResp = NewLimitedOrderSingle::genOrderResponse(message);
-			this->g_ordResps.push_back(orderResp);
-			//c_tradeCenter->callBack(orderResp, g_user.accountNo);
-			break;
+			throw NQ::NotCorrespondingError();
 		}
-	case RespType::OrderExecuteType:
-		{
-			ExecuteResponse execResp = NewLimitedOrderSingle::genExecuteResponse(message);
-			this->g_execResps.push_back(execResp);
-			//c_tradeCenter->callBack(execResp, g_user.accountNo);
+		// 需要多线程操作吗？
+		// 返回报单回报赋值
+		RespType respType = getRespType(message);
+		switch(respType){
+		case RespType::OrderApplyingType:
 			break;
-		}
-	case RespType::CancelCommitType:
-	case RespType::CancelRejectType:
-	case RespType::CancelExecuteType:
-		{
-			CancelResponse cancelResp = CancelRequest::genCancelResponse(message);
-			this->g_cancResps.push_back(cancelResp);
-			//c_tradeCenter->callBack(cancelResp, g_user.accountNo);
-			break;
-		}
-	case RespType::OrderQueryResultType:
-		{
-			OrderQueryResponse ordQryResp = OrderQueryRequest::genOrderQueryResponse(message);
-			this->g_ordQryResps.push_back(ordQryResp);
-			//c_tradeCenter->callBack(ordQryResult, g_user.accountNo);
-			break;
-		}
-	case RespType::FundQueryResultType:
-		{
-			FundPosQueryResponse fundPosQryResp = FundPositionsQueryRequest::genFundPosQryResponse(message);
-			this->g_fundPosQryResps.push_back(fundPosQryResp);
-			if (FundPositionsQueryRequest::isSingleReport(message)
-				|| FundPositionsQueryRequest::isLastReport(message))
+		case RespType::OrderConfirmType:
+		case RespType::OrderRejectType:
 			{
-				CLock cl(&g_cs_r);
-				if (!isRecvThreadRunning() ){
-					g_rThread = new std::thread(&TradeApplication::receveThread, this);
-				}
+				OrderResponse orderResp = NewLimitedOrderSingle::genOrderResponse(message);
+				this->g_ordResps.push_back(orderResp);
+				//c_tradeCenter->callBack(orderResp, g_user.accountNo);
+				break;
 			}
-			return;
+		case RespType::OrderExecuteType:
+			{
+				ExecuteResponse execResp = NewLimitedOrderSingle::genExecuteResponse(message);
+				this->g_execResps.push_back(execResp);
+				//c_tradeCenter->callBack(execResp, g_user.accountNo);
+				break;
+			}
+		case RespType::CancelCommitType:
+		case RespType::CancelRejectType:
+		case RespType::CancelExecuteType:
+			{
+				CancelResponse cancelResp = CancelRequest::genCancelResponse(message);
+				this->g_cancResps.push_back(cancelResp);
+				//c_tradeCenter->callBack(cancelResp, g_user.accountNo);
+				break;
+			}
+		case RespType::OrderQueryResultType:
+			{
+				OrderQueryResponse ordQryResp = OrderQueryRequest::genOrderQueryResponse(message);
+				this->g_ordQryResps.push_back(ordQryResp);
+				//c_tradeCenter->callBack(ordQryResult, g_user.accountNo);
+				break;
+			}
+		case RespType::FundQueryResultType:
+			{
+				FundPosQueryResponse fundPosQryResp = FundPositionsQueryRequest::genFundPosQryResponse(message);
+				this->g_fundPosQryResps.push_back(fundPosQryResp);
+				if (FundPositionsQueryRequest::isSingleReport(message)
+					|| FundPositionsQueryRequest::isLastReport(message))
+				{
+					CLock cl(&g_cs_r);
+					if (!isRecvThreadRunning() ){
+						g_rThread = new std::thread(&TradeApplication::receveThread, this);
+					}
+				}
+				return;
+				break;
+			}
+		default:
 			break;
 		}
-	default:
-		break;
-	}
-	CLock cl(&g_cs_r);
-	if (!isRecvThreadRunning() ){
-		g_rThread = new std::thread(&TradeApplication::receveThread, this);
+		CLock cl(&g_cs_r);
+		if (!isRecvThreadRunning() ){
+			g_rThread = new std::thread(&TradeApplication::receveThread, this);
+		}
+	}catch(NQ::NotCorrespondingError e){
+		// 如果不存在与回报对应的请求
+		// 如何处理
+		return;
 	}
 }
 
@@ -175,8 +182,8 @@ void NQ::TradeApplication::toApp( FIX::Message &message, const FIX::SessionID &s
 	throw( FIX::DoNotSend )
 {
 	initSessionLog(sessionID);
-	g_log->onOutgoing(__FUNCTION__ );
-	g_log->onOutgoing(message.toString());
+	//g_log->onOutgoing(__FUNCTION__ );
+	//g_log->onOutgoing(message.toString());
 }
 
 void NQ::TradeApplication::toAdmin( FIX::Message &msg, const FIX::SessionID &sessionID){
@@ -216,6 +223,7 @@ void NQ::TradeApplication::fromAdmin( const FIX::Message &msg, const FIX::Sessio
 	}
 }
 
+// 是否配对请求
 bool NQ::TradeApplication::isRespCorresponant(const FIX::Message &message)
 {
 	FIX::ExecTransType execTransType;
@@ -225,7 +233,8 @@ bool NQ::TradeApplication::isRespCorresponant(const FIX::Message &message)
 	{
 		for (Orders::iterator it = g_orders.begin(); it!= g_orders.end(); ++it)
 		{
-			if (it->second->getField(FIX::FIELD::MsgType) == FIX::MsgType_OrderStatusRequest)
+			if (it->second->getHeader().getField(FIX::FIELD::MsgType) == FIX::MsgType_OrderStatusRequest
+				&& it->second->getField(FIX::FIELD::ClOrdID) == message.getField(FIX::FIELD::ClOrdID))
 			{
 				delete it->second;
 				g_orders.erase(it);
@@ -235,7 +244,7 @@ bool NQ::TradeApplication::isRespCorresponant(const FIX::Message &message)
 		return false;
 	}
 	FIX::MsgType msgType;
-	message.getFieldIfSet(msgType);
+	message.getHeader().getFieldIfSet(msgType);
 	// 如果消息类型为UAP，则查询是否有UAN的发送请求，并且两者PosReqID必须一致
 	if (msgType.getValue() == NQ::MsgType_UAP)
 	{
@@ -246,7 +255,7 @@ bool NQ::TradeApplication::isRespCorresponant(const FIX::Message &message)
 		}
 		for (Orders::iterator it = g_orders.begin(); it!= g_orders.end(); ++it)
 		{
-			if (it->second->getField(FIX::FIELD::MsgType) == NQ::MsgType_UAN
+			if (it->second->getHeader().getField(FIX::FIELD::MsgType) == NQ::MsgType_UAN
 				&& it->second->getField(FIX::FIELD::PosReqID) == posReqId)
 			{
 				//如果是唯一一条或者多条的最后一条，则删除请求列表中该请求
@@ -269,12 +278,17 @@ bool NQ::TradeApplication::isRespCorresponant(const FIX::Message &message)
 		return false;
 	}
 	FIX::Message* oriMessage = g_orders.find(msgClOrdID.getValue())->second;
-	if (msgType == FIX::MsgType_ExecutionReport && 
-		(oriMessage->getField(FIX::FIELD::LeavesQty)=="0"
-		||oriMessage->getField(FIX::FIELD::OrdStatus).c_str()[0]==FIX::OrdStatus_CANCELED))
-	{
-		delete oriMessage;
-		g_orders.erase(msgClOrdID.getValue());
+	if (msgType == FIX::MsgType_ExecutionReport )
+	{ 
+		if (message.getField(FIX::FIELD::OrdStatus)[0] == FIX::OrdStatus_REJECTED
+			|| message.getField(FIX::FIELD::LeavesQty)=="0"
+			|| message.getField(FIX::FIELD::OrdStatus).c_str()[0]==FIX::OrdStatus_CANCELED)
+		{
+			delete oriMessage;
+			g_orders.erase(msgClOrdID.getValue());
+		}
+
+
 	}
 	return true;
 }
@@ -427,9 +441,15 @@ void NQ::TradeApplication::sendThread(){
 		if (ret == true)
 		{
 			CLock cl(&g_cs_s);
-			g_reqList.pop_front();
 			//delete t_message;
-			g_orders.insert(Orders::value_type(t_message->getField(FIX::FIELD::ClOrdID), t_message));
+			if (t_message->getHeader().getField(FIX::FIELD::MsgType) == NQ::MsgType_UAN)
+			{
+				g_orders.insert(Orders::value_type(t_message->getField(FIX::FIELD::PosReqID), t_message));
+			} else {
+				g_orders.insert(Orders::value_type(t_message->getField(FIX::FIELD::ClOrdID), t_message));
+			}
+
+			g_reqList.pop_front();
 		}
 	}
 	g_sThread = NULL;
@@ -556,7 +576,7 @@ NQ::ReqType NQ::TradeApplication::getReqType(const FIX::Message &message)
 			return ReqType::StockQueryType;
 		}
 		// 资金查询
-		if (qryType == 9){
+		if (qryType == NQ::PosReqType_FUNDS){
 			return ReqType::FundQueryType;
 		}
 	}
@@ -585,13 +605,13 @@ NQ::RespType NQ::TradeApplication::getRespType(const FIX::Message &message)
 			return RespType::StockQueryResultType;
 		}
 		// 资金查询回报
-		if (qryType == 9)
+		if (qryType == NQ::PosReqType_FUNDS)
 		{
 			return RespType::FundQueryResultType;
 		}
 	}
 	FIX::ExecTransType execTransType;
-	if (message.getHeader().getFieldIfSet(execTransType))
+	if (message.getFieldIfSet(execTransType))
 	{
 		// 应答发送类别为3时，消息为报单状态查询结果
 		if (execTransType == FIX::ExecTransType_STATUS)
@@ -610,6 +630,10 @@ NQ::RespType NQ::TradeApplication::getRespType(const FIX::Message &message)
 		if (orderStatus == FIX::OrdStatus_NEW)
 		{
 			return RespType::OrderConfirmType;
+		}
+		if (orderStatus == FIX::OrdStatus_PENDING_NEW)
+		{
+			return RespType::OrderApplyingType;
 		}
 		// 委托状态为8时，消息为委托拒绝
 		if (orderStatus == FIX::OrdStatus_REJECTED)

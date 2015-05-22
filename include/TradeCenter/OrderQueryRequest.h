@@ -10,10 +10,9 @@ namespace NQ{
 	public:
 		OrderQueryRequest(OrderQuery& ordQuery):
 			FIX42::OrderStatusRequest(
-			FIX::ClOrdID(GenerateUniqueID()),
+			FIX::ClOrdID(ordQuery.orderId),
 			FIX::Symbol(ordQuery.stock),
 			FIX::Side(ordQuery.side)){
-				ordQuery.orderId = this->getField(FIX::FIELD::ClOrdID);
 				ordQuery.response = TradeRespBase(RespCode::SUCC,"");
 		}
 
@@ -22,7 +21,7 @@ namespace NQ{
 		{
 			// 消息类型
 			FIX::MsgType msgType;
-			if (!message.getFieldIfSet(msgType))
+			if (!message.getHeader().getFieldIfSet(msgType))
 			{
 				throw NQ::LackOfFieldError("MsgType 35");
 			}

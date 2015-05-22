@@ -104,11 +104,11 @@ namespace NQ{
 				execType = ExecuteType::PartlyExecuted;
 			}
 			// 委托待撤
-			else
+			else if (status == FIX::OrdStatus_PENDING_CANCEL)
 			{
 				ordStatus = OrderStatus::OrderCancelling;
 				execType = ExecuteType::PartlyExecuted;
-			}
+			} 
 			// 委托数量
 			FIX::CumQty orderNum;
 			if (!message.getFieldIfSet(orderNum))
