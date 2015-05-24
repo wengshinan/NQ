@@ -246,7 +246,7 @@ namespace NQ{
 
 	//持仓查询实体
 	struct OrderQuery{
-		OrderId			orderId;			//持仓查询请求单号
+		OrderId			orderId;			//持仓查询请求单号，对应限价下单的单号，不能随机生成
 		TradeSide		side;				//买卖方向
 		StockCode		stock;				//证券代码
 		TradeRespBase	response;			//查询请求情况，应用端发起情况，与请求结果无关
@@ -262,7 +262,7 @@ namespace NQ{
 
 	//持仓查询结果
 	struct OrderQueryResponse{
-		RespOrderId		orderId;			//持仓查询应答标识，与持仓查询请求单号无关？待确认
+		RespOrderId		orderId;			//持仓查询应答标识，与持仓查询请求单号、限价下单单号对应
 		StockNum		totalSum;			//累计成交数量
 		StockPrice		averageExecPrice;	//平均成交价格
 		StockNum		orderNum;			//委托总数量

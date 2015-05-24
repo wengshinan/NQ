@@ -32,10 +32,10 @@ namespace NQ{
 			}
 
 			// 应答单号
-			FIX::OrderID ordID;
+			FIX::ClOrdID ordID;
 			if (!message.getFieldIfSet(ordID))
 			{
-				throw NQ::LackOfFieldError("OrderID 37");
+				throw NQ::LackOfFieldError("ClOrderID 11");
 			}
 
 			// 平均成交价
