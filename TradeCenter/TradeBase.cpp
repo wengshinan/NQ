@@ -105,8 +105,8 @@ NQ::EnumParser<NQ::Currency>::EnumParser()
 }
 NQ::EnumParser<NQ::MarketCode>::EnumParser()
 {
-	enumMap["CNY"] = MarketCode::XSHG;
-	enumMap["USD"] = MarketCode::XSHE;
+	enumMap["XSHG"] = MarketCode::XSHG;
+	enumMap["XSHE"] = MarketCode::XSHE;
 }
 NQ::EnumParser<NQ::PositionType>::EnumParser()
 {

@@ -135,11 +135,19 @@ int main()
 				NQ::FundPosQuery query(0);
 				int result = demo.ReqFundPosQuery(demo.g_user,query);
 				std::cout<<result<< "  " << query.id << std::endl; 
+				if (result == NQ::RespCode::FAIL)
+				{
+					std::cout << query.response.errorMessage << std::endl;
+				}
 			} else if (ch == '2')
 			{
 				NQ::FundPosQuery query(9);			
 				int result = demo.ReqFundPosQuery(demo.g_user,query);
 				std::cout<<result<< "  " << query.id << std::endl; 
+				if (result == NQ::RespCode::FAIL)
+				{
+					std::cout << query.response.errorMessage << std::endl;
+				}
 			} else if (ch == '3')
 			{
 				NQ::LimitedOrder order(
@@ -152,6 +160,10 @@ int main()
 					);
 				int result = demo.ReqLimitOrder(demo.g_user,order);
 				std::cout<<result<< "  " << order.id <<std::endl;
+				if (result == NQ::RespCode::FAIL)
+				{
+					std::cout << order.response.errorMessage << std::endl;
+				}
 			} else if (ch == '4')
 			{
 				std::cout << "请输入需要撤单的单号：" <<std::endl;
@@ -160,12 +172,20 @@ int main()
 				NQ::CancelOrder cancel(oriId, 1000, NQ::TradeSide::Buy,"600029");
 				int result = demo.ReqCancelLimitOrder(demo.g_user,cancel);
 				std::cout<<result<< "  " << cancel.orderId <<std::endl;
+				if (result == NQ::RespCode::FAIL)
+				{
+					std::cout << cancel.response.errorMessage << std::endl;
+				}
 			}
 			else if (ch == '5')
 			{
 				NQ::OrderQuery query("002CF1281432297164412",NQ::TradeSide::Buy, "600029");
 				int result = demo.ReqOrderQuery(demo.g_user, query);
 				std::cout<<result<< "  " << query.orderId << std::endl; 
+				if (result == NQ::RespCode::FAIL)
+				{
+					std::cout << query.response.errorMessage << std::endl;
+				}
 			}
 			else if (ch == 'q')
 			{

@@ -51,6 +51,12 @@
     <ClInclude Include="FundPositionsQueryRequest.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MarketQueryRequest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TradeApplication.cpp">
@@ -60,6 +66,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="TradeCenter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MarketInterface.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MarketQueryRequest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

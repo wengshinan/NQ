@@ -54,7 +54,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Workspace\quickfix\include;E:\Workspace\TradeCenter\ThirdParty\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\include;E:\Workspace\quickfix\include;E:\Workspace\TradeCenter\ThirdParty\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -73,8 +73,8 @@ del /F EXCLUDE
 </Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32MD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32MD.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -99,6 +99,7 @@ del /F EXCLUDE
     <ClInclude Include="FundPositionsQueryRequest.h" />
     <ClInclude Include="Lock.h" />
     <ClInclude Include="MarketInterface.h" />
+    <ClInclude Include="MarketQueryRequest.h" />
     <ClInclude Include="NewOrderSingle.h" />
     <ClInclude Include="CancelRequest.h" />
     <ClInclude Include="OrderQueryRequest.h" />
@@ -108,8 +109,11 @@ del /F EXCLUDE
     <ClInclude Include="TradeEntity.h" />
     <ClInclude Include="TradeError.h" />
     <ClInclude Include="TradeInterface.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MarketInterface.cpp" />
+    <ClCompile Include="MarketQueryRequest.cpp" />
     <ClCompile Include="TradeApplication.cpp" />
     <ClCompile Include="TradeBase.cpp" />
     <ClCompile Include="TradeCenter.cpp" />

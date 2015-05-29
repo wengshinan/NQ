@@ -48,5 +48,35 @@ namespace NQ{
 			: WrongResponseError("Response not corresponding request"){}
 	};
 
+	struct OpenFileFailError : public std::logic_error
+	{
+		OpenFileFailError( const std::string& what )
+			: std::logic_error( "Not allowed to read/write file [" + what + "]" ),
+			errmsg(what)
+		{}
+		~OpenFileFailError() throw() {}
+
+		std::string errmsg;
+	};
+
+	struct ReadConfigFailError : public std::logic_error
+	{
+		ReadConfigFailError( const std::string& what )
+			: std::logic_error( "Not able to read config file [" + what + "]" ),
+			errmsg(what)
+		{}
+		~ReadConfigFailError() throw() {}
+
+		std::string errmsg;
+	};
+
+	struct ConnectFailError : public std::logic_error
+	{
+		ConnectFailError()
+			: std::logic_error( "Fail to connect to server" )
+		{}
+		~ConnectFailError() throw() {}
+	};
+
 }
 #endif // !TRADE_ERROR_H

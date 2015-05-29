@@ -150,6 +150,7 @@ void NQ::TradeApplication::fromApp( const FIX::Message &message, const FIX::Sess
 				break;
 			}
 		case RespType::FundQueryResultType:
+		case RespType::StockQueryResultType:
 			{
 				FundPosQueryResponse fundPosQryResp = FundPositionsQueryRequest::genFundPosQryResponse(message);
 				this->g_fundPosQryResps.push_back(fundPosQryResp);
@@ -158,7 +159,11 @@ void NQ::TradeApplication::fromApp( const FIX::Message &message, const FIX::Sess
 				{
 					CLock cl(&g_cs_r);
 					if (!isRecvThreadRunning() ){
-						g_rThread = new std::thread(&TradeApplication::receveThread, this);
+						std::thread tmpThread(&TradeApplication::receveThread, this);
+						g_rThread = &tmpThread;
+						tmpThread.detach();
+						//g_rThread = new std::thread(&TradeApplication::receveThread, this);
+						//Sleep(10000);
 					}
 				}
 				return;
@@ -169,7 +174,10 @@ void NQ::TradeApplication::fromApp( const FIX::Message &message, const FIX::Sess
 		}
 		CLock cl(&g_cs_r);
 		if (!isRecvThreadRunning() ){
-			g_rThread = new std::thread(&TradeApplication::receveThread, this);
+			std::thread tmpThread(&TradeApplication::receveThread, this);
+			g_rThread = &tmpThread;
+			tmpThread.detach();
+			//g_rThread = new std::thread(&TradeApplication::receveThread, this);
 		}
 	}catch(NQ::NotCorrespondingError e){
 		// 如果不存在与回报对应的请求
@@ -221,6 +229,14 @@ void NQ::TradeApplication::fromAdmin( const FIX::Message &msg, const FIX::Sessio
 	{
 		g_log->onEvent("    Sequence: " + msg.getField(FIX::FIELD::NewSeqNo));
 	}
+	/*
+	FIX::MsgType msgType;
+	msg.getHeader().getField(msgType);
+	if (msgType == FIX::MsgType_Logout)
+	{
+	g_sconnected = ConnectStatus::NotConnect;
+	}
+	*/
 }
 
 // 是否配对请求
@@ -352,7 +368,9 @@ void NQ::TradeApplication::sendLimitedOrder(LimitedOrder& order) {
 	CLock cl(&g_cs_s);
 	g_reqList.push_back(t_order);
 	if (!isSendThreadRunning() && !g_reqList.empty()){
-		g_sThread = new std::thread(&TradeApplication::sendThread, this);
+		std::thread tmpThread(&TradeApplication::sendThread, this);
+		g_sThread = &tmpThread;
+		tmpThread.detach();
 	}
 }
 void NQ::TradeApplication::sendCancelOrder(CancelOrder& cancel){
@@ -376,7 +394,9 @@ void NQ::TradeApplication::sendCancelOrder(CancelOrder& cancel){
 	CLock cl(&g_cs_s);
 	g_reqList.push_back(t_cancel);
 	if (!isSendThreadRunning() && !g_reqList.empty()){
-		g_sThread = new std::thread(&TradeApplication::sendThread, this);
+		std::thread tmpThread(&TradeApplication::sendThread, this);
+		g_sThread = &tmpThread;
+		tmpThread.detach();
 	}
 }
 void NQ::TradeApplication::sendQueryOrder(OrderQuery& query){
@@ -400,7 +420,9 @@ void NQ::TradeApplication::sendQueryOrder(OrderQuery& query){
 	CLock cl(&g_cs_s);
 	g_reqList.push_back(t_query);
 	if (!isSendThreadRunning() && !g_reqList.empty()){
-		g_sThread = new std::thread(&TradeApplication::sendThread, this);
+		std::thread tmpThread(&TradeApplication::sendThread, this);
+		g_sThread = &tmpThread;
+		tmpThread.detach();
 	}
 }
 void NQ::TradeApplication::sendFundPosQry(FundPosQuery& query){
@@ -424,7 +446,9 @@ void NQ::TradeApplication::sendFundPosQry(FundPosQuery& query){
 	CLock cl(&g_cs_s);
 	g_reqList.push_back(t_query);
 	if (!isSendThreadRunning() && !g_reqList.empty()){
-		g_sThread = new std::thread(&TradeApplication::sendThread, this);
+		std::thread tmpThread(&TradeApplication::sendThread, this);
+		g_sThread = &tmpThread;
+		tmpThread.detach();
 	}
 }
 

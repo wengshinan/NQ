@@ -72,10 +72,10 @@ namespace NQ
 			}
 
 			// 响应消息id
-			FIX::PosMaintRptID rptId;
+			FIX::PosReqID rptId;
 			if (!message.getFieldIfSet(rptId))
 			{
-				throw NQ::LackOfFieldError("PosMaintRptID 721");
+				throw NQ::LackOfFieldError("PosReqID 710");
 			}
 
 			// 请求类别
