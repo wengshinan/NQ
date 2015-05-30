@@ -54,7 +54,7 @@
     <ClInclude Include="MarketQueryRequest.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="util.h">
+    <ClInclude Include="Util.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

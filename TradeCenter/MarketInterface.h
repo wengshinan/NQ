@@ -235,9 +235,9 @@ namespace NQ{
 	{
 	public:
 		//请求行情，只需要执行一次，若返回成功，则订阅成功
-		virtual int init(std::string marketConfigFile);
+		virtual int init(std::string marketConfigFile)=0;
 		//手动订阅行情
-		virtual int reqMarketQuery();
+		virtual int reqMarketQuery()=0;
 		//回调
 		virtual int onRespMarketQuery(NQ_ET::SQuote tickData)=0;
 	};

@@ -10,7 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include "TradeError.h"
-#include "util.h"
+#include "Util.h"
 #include "MarketInterface.h"
 
 namespace NQ{

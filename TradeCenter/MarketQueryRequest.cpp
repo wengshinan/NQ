@@ -1,5 +1,8 @@
 #include "MarketQueryRequest.h"
 
+std::map<std::string, TDF_CODE> NQ::MarketQueryRequest::m_marketCode;
+std::map<std::string, TDF_MARKET_DATA> NQ::MarketQueryRequest::m_marketData;
+NQ::MarketQueryRequest* NQ::MarketQueryRequest::g_marketReq;
 
 bool NQ::ConfigSettings::LoadSettings(const std::string& strConfigFile){
 	std::fstream cfgFile;
@@ -21,10 +24,10 @@ bool NQ::ConfigSettings::LoadSettings(const std::string& strConfigFile){
 		size_t end = line.find('#');
 		if(pos==std::string::npos) continue;
 
-		std::string key = trim(line.substr(0,pos));
+		std::string key = Util::trim(line.substr(0,pos));
 		std::string value;
-		if(end==std::string::npos) value = trim(line.substr(pos+1));
-		else value = pos+1>=end?"":trim(line.substr(pos+1,end-pos-1));
+		if(end==std::string::npos) value = Util::trim(line.substr(pos+1));
+		else value = pos+1>=end?"":Util::trim(line.substr(pos+1,end-pos-1));
 
 		key2value.insert(std::map<std::string, std::string>::value_type(key, value));
 	}
@@ -274,14 +277,14 @@ void NQ::MarketQueryRequest::getConnection()
 
 		if (++connCnt>cfgSettings.nMaxConFailCount)
 		{
-			delete[] open_settings.szMarkets;
-			delete[] open_settings.szSubScriptions;
+			//delete[] open_settings.szMarkets;
+			//delete[] open_settings.szSubScriptions;
 			throw ConnectFailError();
 			return;
 		}
 
-		delete[] open_settings.szMarkets;
-		delete[] open_settings.szSubScriptions;
+		//delete[] open_settings.szMarkets;
+		//delete[] open_settings.szSubScriptions;
 	}
 }
 
@@ -451,22 +454,22 @@ bool NQ::MarketQueryRequest::dataModified(TDF_MARKET_DATA recentData){
 	bool flag = false;
 	TDF_MARKET_DATA& preData = m_marketData.find(std::string(recentData.szWindCode))->second;
 
-	ifNotCmpThenCpy(recentData.szCode, preData.szCode, flag, 31);
-	ifNotCmpThenCpy(recentData.nStatus, preData.nStatus, flag);
-	ifNotCmpThenCpy(recentData.nPreClose, preData.nPreClose, flag);
-	ifNotCmpThenCpy(recentData.nOpen, preData.nOpen, flag);
-	ifNotCmpThenCpy(recentData.nHigh, preData.nHigh, flag);
-	ifNotCmpThenCpy(recentData.nLow, preData.nLow, flag);
-	ifNotCmpThenCpy(recentData.nMatch, preData.nMatch, flag);
-	ifNotCmpThenCpy(recentData.nAskPrice, preData.nAskPrice, flag, 10);
-	ifNotCmpThenCpy(recentData.nAskVol, preData.nAskVol, flag, 10);
-	ifNotCmpThenCpy(recentData.nBidPrice, preData.nBidPrice, flag, 10);
-	ifNotCmpThenCpy(recentData.nBidVol, preData.nBidVol, flag, 10);
-	ifNotCmpThenCpy(recentData.nNumTrades, preData.nNumTrades, flag);
-	ifNotCmpThenCpy(recentData.iVolume, preData.iVolume, flag);
-	ifNotCmpThenCpy(recentData.iTurnover, preData.iTurnover, flag);
-	ifNotCmpThenCpy(recentData.nHighLimited, preData.nHighLimited, flag);
-	ifNotCmpThenCpy(recentData.nLowLimited, preData.nLowLimited, flag);
+	Util::ifNotCmpThenCpy(recentData.szCode, preData.szCode, flag, 31);
+	Util::ifNotCmpThenCpy(recentData.nStatus, preData.nStatus, flag);
+	Util::ifNotCmpThenCpy(recentData.nPreClose, preData.nPreClose, flag);
+	Util::ifNotCmpThenCpy(recentData.nOpen, preData.nOpen, flag);
+	Util::ifNotCmpThenCpy(recentData.nHigh, preData.nHigh, flag);
+	Util::ifNotCmpThenCpy(recentData.nLow, preData.nLow, flag);
+	Util::ifNotCmpThenCpy(recentData.nMatch, preData.nMatch, flag);
+	Util::ifNotCmpThenCpy(recentData.nAskPrice, preData.nAskPrice, flag, 10);
+	Util::ifNotCmpThenCpy(recentData.nAskVol, preData.nAskVol, flag, 10);
+	Util::ifNotCmpThenCpy(recentData.nBidPrice, preData.nBidPrice, flag, 10);
+	Util::ifNotCmpThenCpy(recentData.nBidVol, preData.nBidVol, flag, 10);
+	Util::ifNotCmpThenCpy(recentData.nNumTrades, preData.nNumTrades, flag);
+	Util::ifNotCmpThenCpy(recentData.iVolume, preData.iVolume, flag);
+	Util::ifNotCmpThenCpy(recentData.iTurnover, preData.iTurnover, flag);
+	Util::ifNotCmpThenCpy(recentData.nHighLimited, preData.nHighLimited, flag);
+	Util::ifNotCmpThenCpy(recentData.nLowLimited, preData.nLowLimited, flag);
 
 	return flag;
 }
@@ -514,10 +517,10 @@ void NQ::MarketQueryRequest::callBackTick(std::string szWindCode)
 	dTick.UpperLimitPrice = (data.nHighLimited*1.0)/10000;
 	dTick.LowerLimitPrice = (data.nLowLimited*1.0)/10000;
 	dTick.Volume = data.nNumTrades;
-	intArrayToDouble(data.nBidPrice, dTick.BidPrice, 10, 10000);
-	intArrayToDouble(data.nBidVol, dTick.BidVol, 10, 10000);
-	intArrayToDouble(data.nAskPrice, dTick.AskPrice, 10, 10000);
-	intArrayToDouble(data.nAskVol, dTick.AskVol, 10, 10000);
+	Util::intArrayToDouble(data.nBidPrice, dTick.BidPrice, 10, 10000);
+	Util::intArrayToDouble(data.nBidVol, dTick.BidVol, 10, 10000);
+	Util::intArrayToDouble(data.nAskPrice, dTick.AskPrice, 10, 10000);
+	Util::intArrayToDouble(data.nAskVol, dTick.AskVol, 10, 10000);
 	dTick.ExchangeCode = exchangeCode;
 
 	this->caller->onRespMarketQuery(dTick);

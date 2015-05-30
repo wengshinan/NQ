@@ -1,8 +1,10 @@
 #pragma once
 #include "TradeCenter/TradeCenter.h"
+#include "TradeCenter/MarketInterface.h"
+#include "TradeCenter/MarketQueryRequest.h"
 
 
-class Demo : public NQ::IUser, public NQ::IOrderCaller
+class Demo : public NQ::IUser, public NQ::IOrderCaller, public NQ::MarketCaller
 {
 public:
 	Demo(void);
@@ -26,5 +28,11 @@ public:
 
 	AccountNo g_user;
 	NQ::TradeCenter g_tradeCenter;
+	NQ::MarketQueryRequest* g_marketCenter;
+
+public:
+	int init(std::string marketConfigFile);
+	int reqMarketQuery();
+	int onRespMarketQuery(NQ_ET::SQuote tickData);
 };
 

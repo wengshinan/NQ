@@ -106,9 +106,7 @@ int Demo::UnloadUser(AccountNo user)
 	return 1;
 }
 
-
-int main()
-{
+int testTradeCenter(){
 	try
 	{
 		Demo demo;
@@ -200,4 +198,55 @@ int main()
 		std::cout << e.what();
 		return 1;
 	}
+	return 1;
+}
+
+
+int Demo::init(std::string marketConfigFile)
+{
+	NQ::MarketQueryRequest g_marketRequest(marketConfigFile);
+	g_marketCenter = &g_marketRequest;
+	g_marketCenter->setEnvironment();
+	g_marketCenter->getConnection();
+	return 1;
+}
+
+int Demo::reqMarketQuery()
+{
+	g_marketCenter->subscribMarketData("",NQ::SubscribType::SUBSCRIPTION_FULL);
+	return 1;
+}
+
+int Demo::onRespMarketQuery(NQ_ET::SQuote tickData)
+{
+	std::cout << tickData.StkCode << " " << tickData.CurrentTime <<": " << tickData.LastPrice << std::endl;
+	return 1;
+}
+
+int testMarketQuery()
+{
+	Demo demo;
+	int result = 0;
+	try{
+		result = demo.init("E:/Workspace/TradeCenter/ThirdParty/TDFEasyDemo.ini");
+		result = demo.reqMarketQuery();
+		while(getchar()){
+			std::cout << "循环继续" << std::endl;
+		}
+	}catch(std::exception e){
+		std::cout << e.what() << std::endl;
+		return result;
+	}
+
+	return result;
+}
+
+int main()
+{
+	//测试fix
+	//testTradeCenter();
+
+	//测试行情
+	testMarketQuery();
+	getchar();
 }

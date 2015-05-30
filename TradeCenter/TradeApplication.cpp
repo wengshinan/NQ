@@ -183,6 +183,14 @@ void NQ::TradeApplication::fromApp( const FIX::Message &message, const FIX::Sess
 		// 如果不存在与回报对应的请求
 		// 如何处理
 		return;
+	}catch(NQ::LackOfFieldError e){
+		g_log->onEvent(message.toString());
+		g_log->onEvent(e.what());
+		return;
+	}catch(NQ::WrongResponseError e){
+		g_log->onEvent(message.toString());
+		g_log->onEvent(e.what());
+		return;
 	}
 }
 
@@ -225,11 +233,11 @@ void NQ::TradeApplication::fromAdmin( const FIX::Message &msg, const FIX::Sessio
 	initSessionLog(sessionID);
 	g_log->onEvent(__FUNCTION__);
 	g_log->onEvent(msg.toString());
+	/*
 	if (msg.getHeader().getField(FIX::FIELD::MsgType)==FIX::MsgType_SequenceReset)
 	{
 		g_log->onEvent("    Sequence: " + msg.getField(FIX::FIELD::NewSeqNo));
 	}
-	/*
 	FIX::MsgType msgType;
 	msg.getHeader().getField(msgType);
 	if (msgType == FIX::MsgType_Logout)
