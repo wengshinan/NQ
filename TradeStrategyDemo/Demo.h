@@ -4,7 +4,7 @@
 #include "TradeCenter/MarketQueryRequest.h"
 
 
-class Demo : public NQ::IUser, public NQ::IOrderCaller, public NQ::MarketCaller
+class Demo : public NQ::IUser, public NQ::IOrderCaller, public NQ_ET::IDataInStream<NQ_ET::SQuote>
 {
 public:
 	Demo(void);
@@ -34,5 +34,7 @@ public:
 	int init(std::string marketConfigFile);
 	int reqMarketQuery();
 	int onRespMarketQuery(NQ_ET::SQuote tickData);
+
+	bool OnData(NQ_ET::SQuote& data);
 };
 

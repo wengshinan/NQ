@@ -112,8 +112,8 @@ namespace NQ{
 		bool subscribMarketData(std::vector<std::string>& codes, SubscribType type);
 
 		//设置调用方，便于回调函数执行
-		void setMarketCaller(MarketCaller* marketCaller){
-			caller = marketCaller;
+		void setMarketCaller(NQ_ET::IDataInStream<NQ_ET::SQuote>* marketCaller){
+			g_caller = marketCaller;
 		}
 
 	public:
@@ -144,6 +144,7 @@ namespace NQ{
 		std::string getWindCode(std::string code);
 
 		MarketCaller* caller;
+		NQ_ET::IDataInStream<NQ_ET::SQuote>* g_caller;
 	};
 
 }

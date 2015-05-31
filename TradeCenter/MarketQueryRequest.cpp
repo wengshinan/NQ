@@ -523,7 +523,7 @@ void NQ::MarketQueryRequest::callBackTick(std::string szWindCode)
 	Util::intArrayToDouble(data.nAskVol, dTick.AskVol, 10, 10000);
 	dTick.ExchangeCode = exchangeCode;
 
-	this->caller->onRespMarketQuery(dTick);
+	this->g_caller->OnData(dTick);
 }
 
 bool NQ::MarketQueryRequest::subscribMarketData(std::string code, SubscribType type){

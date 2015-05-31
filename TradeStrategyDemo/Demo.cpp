@@ -223,6 +223,12 @@ int Demo::onRespMarketQuery(NQ_ET::SQuote tickData)
 	return 1;
 }
 
+bool Demo::OnData(NQ_ET::SQuote& data)
+{
+	std::cout << data.StkCode << " " << data.CurrentTime <<": " << data.LastPrice << std::endl;
+	return true;
+}
+
 int testMarketQuery()
 {
 	Demo demo;
