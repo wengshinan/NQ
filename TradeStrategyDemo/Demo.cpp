@@ -8,6 +8,8 @@ Demo::Demo(void)
 
 Demo::~Demo(void)
 {
+	g_marketCenter->close();
+	delete g_marketCenter;
 }
 
 int Demo::ReqLimitOrder(AccountNo user, NQ::LimitedOrder& order)
@@ -204,10 +206,11 @@ int testTradeCenter(){
 
 int Demo::init(std::string marketConfigFile)
 {
-	NQ::MarketQueryRequest g_marketRequest(marketConfigFile);
-	g_marketCenter = &g_marketRequest;
+	NQ::MarketQueryRequest* g_marketRequest = new NQ::MarketQueryRequest(marketConfigFile);
+	g_marketCenter =g_marketRequest;
 	g_marketCenter->setEnvironment();
 	g_marketCenter->getConnection();
+	g_marketCenter->setMarketCaller(this);
 	return 1;
 }
 
@@ -235,9 +238,66 @@ int testMarketQuery()
 	int result = 0;
 	try{
 		result = demo.init("E:/Workspace/TradeCenter/ThirdParty/TDFEasyDemo.ini");
-		result = demo.reqMarketQuery();
-		while(getchar()){
-			std::cout << "循环继续" << std::endl;
+		//result = demo.reqMarketQuery();
+		getchar();
+		while (true)
+		{
+			int flag;
+			std::cout << std::endl;
+			std::cout << "1.全市场订阅行情" << std::endl;
+			std::cout << "2.设置订阅行情" << std::endl;
+			std::cout << "3.增加订阅行情" << std::endl;
+			std::cout << "4.删除订阅行情" << std::endl;
+			std::cout << "0.退出订阅行情" << std::endl;
+			std::cout << "请选择：" ;
+			std::cin >> flag;
+
+			result = 0;
+
+			if (flag == 0)
+			{
+				break;
+			} else if (flag == 1)
+			{
+				if (demo.g_marketCenter->g_marketReq->subscribMarketData("", NQ::SubscribType::SUBSCRIPTION_FULL))
+					result = 1;
+				else result = 0;
+			} else if (flag == 2)
+			{
+				std::string stock;
+				std::cout << "输入需订阅的证券代码：" ;
+				std::cin >> stock;
+				if (demo.g_marketCenter->g_marketReq->subscribMarketData(stock, NQ::SubscribType::SUBSCRIPTION_SET))
+					result = 1;
+				else result = 0;
+			} else if (flag == 3)
+			{
+				std::string stock;
+				std::cout << "输入需增加订阅的证券代码：" ;
+				std::cin >> stock;
+				if (demo.g_marketCenter->g_marketReq->subscribMarketData(stock, NQ::SubscribType::SUBSCRIPTION_ADD))
+					result = 1;
+				else result = 0;
+			} else 
+			{
+				std::string stock;
+				std::cout << "输入需删除订阅的证券代码：" ;
+				std::cin >> stock;
+				if (demo.g_marketCenter->g_marketReq->subscribMarketData(stock, NQ::SubscribType::SUBSCRIPTION_DEL))
+					result = 1;
+				else result = 0;
+			}
+			if (result == 1) std::cout << std::endl << "处理成功" << std::endl;
+			else std::cout << std::endl << "处理失败" << std::endl;
+
+		}
+
+
+
+		if(getchar()){
+			std::cout << "断开连接" << std::endl;
+			std::cout << demo.g_marketCenter->m_marketData.size() << std::endl;
+			std::cout << demo.g_marketCenter->m_threadCnt << std::endl;
 		}
 	}catch(std::exception e){
 		std::cout << e.what() << std::endl;
@@ -254,5 +314,13 @@ int main()
 
 	//测试行情
 	testMarketQuery();
+
+	/*
+	std::string szCode = "000001.SZ";
+	int i1 = szCode.find('.');
+	int i2 = szCode.length();
+	std::string market = szCode.substr(szCode.find('.')+1,szCode.length()-i1-1);
+	std::cout << market << std::endl;
+	*/
 	getchar();
 }

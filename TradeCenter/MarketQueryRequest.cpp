@@ -1,8 +1,9 @@
 #include "MarketQueryRequest.h"
 
-std::map<std::string, TDF_CODE> NQ::MarketQueryRequest::m_marketCode;
+std::map<std::string, std::string> NQ::MarketQueryRequest::m_marketCode;
 std::map<std::string, TDF_MARKET_DATA> NQ::MarketQueryRequest::m_marketData;
 NQ::MarketQueryRequest* NQ::MarketQueryRequest::g_marketReq;
+CRITICAL_SECTION NQ::MarketQueryRequest::m_cs;
 
 bool NQ::ConfigSettings::LoadSettings(const std::string& strConfigFile){
 	std::fstream cfgFile;
@@ -73,7 +74,7 @@ bool NQ::ConfigSettings::LoadSettings(const std::string& strConfigFile){
 		else return false;
 
 		it=key2value.find("DataDir");
-		if (it!=key2value.end()) strncpy_s(szDataDir, it->second.c_str(), 31);
+		if (it!=key2value.end()) strncpy_s(szDataDir, it->second.c_str(), 260);
 		else return false;
 
 		/*
@@ -173,35 +174,62 @@ bool NQ::ConfigSettings::LoadSettings(const std::string& strConfigFile){
 		it=key2value.find("MaxFailCount");
 		if (it!=key2value.end()) nMaxConFailCount = atoi(it->second.c_str());
 		else return false;
+
+		it=key2value.find("MaxThreadCount");
+		if (it!=key2value.end()) NQ::MarketQueryRequest::g_marketReq->max_threadCnt = atoi(it->second.c_str());
+		else return false;
 	}
 
 	key2value.clear();
 	return true;
 }
 
+std::ofstream NQ::MarketQueryRequest::initDataFile(std::string path, bool isNew)
+{
+	if (isNew)
+	{
+		remove(path.c_str());
+	}
+	std::ofstream outData;
+	outData.open(path.c_str(), std::ios_base::out);
+	return outData;
+}
+
 NQ::MarketQueryRequest::MarketQueryRequest(std::string strConfigFile){
+	g_marketReq = this;
 	bool bLoadSettings = cfgSettings.LoadSettings(strConfigFile);
 	if(!bLoadSettings) {
 		throw ReadConfigFailError(strConfigFile);
 		return;
 	}
 
-	std::string strLogPath(cfgSettings.szDataDir, 0, sizeof(cfgSettings.szDataDir)-1);
-	strLogPath += "日志文件.txt";
-	g_fsLog.open(strLogPath.c_str(), std::ios_base::out);
+	char today[32]  ="";
+	time_t time = std::time(NULL);
+	tm temptm;
+	localtime_s(&temptm, &time);
+	sprintf_s(today,"%d年%02d月%02d日",temptm.tm_year+1900,temptm.tm_mon+1,temptm.tm_mday);  
+	std::string strDataPath(cfgSettings.szDataDir, 0, sizeof(cfgSettings.szDataDir)-1);
+	strDataPath += std::string(today);
+	strDataPath += "日志文件.txt";
+
+	g_fsLog = initDataFile(strDataPath, false);
+	//g_fsData.open(strDataPath.c_str(), std::ios_base::out);
 	if (!g_fsLog.is_open())
 	{
-		throw OpenFileFailError(strLogPath.c_str());
+		throw OpenFileFailError(strDataPath.c_str());
 		return;
 	}
 
 	g_hTDF = NULL;
-	g_marketReq = this;
+	m_threadCnt = 0;
+
+	InitializeCriticalSection(&m_cs);
 }
 
 NQ::MarketQueryRequest::~MarketQueryRequest(){
 	m_marketCode.clear();
 	m_marketData.clear();
+	DeleteCriticalSection(&m_cs);
 }
 
 void NQ::MarketQueryRequest::setEnvironment()
@@ -380,18 +408,82 @@ void NQ::MarketQueryRequest::RecvData(THANDLE hTdf, TDF_MSG* pMsgHead)
 				{
 					m_marketData.insert(std::map<std::string, TDF_MARKET_DATA>::value_type(szWindCode, *pLastMarket));
 				}
-				std::thread tmpThread(&NQ::MarketQueryRequest::callBackTick, g_marketReq, szWindCode);
-				tmpThread.detach();
+				NQ_ET::SQuote tickData = getTickData(*pLastMarket);
+				while (g_marketReq->m_threadCnt > g_marketReq->max_threadCnt)
+				{
+					Sleep(100);
+				}
+				CLock cl(&m_cs);
+				g_marketReq->m_threadCnt++;
+				if (g_marketReq)
+				{
+					std::thread tmpThread(&NQ::MarketQueryRequest::callBackTick, g_marketReq, tickData);
+					tmpThread.detach();
+				}
 			}
-
 		}
 		break;
 	default:
 		{
-			assert(0);
+			//assert(0);
 		}
 		break;
 	}
+}
+
+NQ_ET::SQuote NQ::MarketQueryRequest::getTickData(TDF_MARKET_DATA& data)
+{
+	std::string szWindCode = data.szWindCode;
+	std::string name = m_marketCode.find(szWindCode)->second;
+
+	int dotPos = szWindCode.find('.');
+	std::string market = szWindCode.substr(dotPos+1,szWindCode.length()-dotPos-1);
+	NQ_ET::EListedExchange exchangeCode;
+	if (market=="SZ")
+	{
+		exchangeCode = NQ_ET::EListedExchange::SZSE;
+	} else if (market=="SH")
+	{
+		exchangeCode = NQ_ET::EListedExchange::SHSE;
+	} else if (market=="CF")
+	{
+		exchangeCode = NQ_ET::EListedExchange::CFE;
+	} else if (market=="CHF")
+	{
+		exchangeCode = NQ_ET::EListedExchange::SHFE;
+	} else if (market=="CZC")
+	{
+		exchangeCode = NQ_ET::EListedExchange::ZCE;
+	} else if (market=="DCE")
+	{
+		exchangeCode = NQ_ET::EListedExchange::DCE;
+	}
+
+
+
+	NQ_ET::SQuote dTick;
+
+	dTick.StkCode = data.szCode;
+	dTick.StkName =	name;
+	dTick.CurrentDate = data.nActionDay;
+	dTick.CurrentTime =	data.nTime;
+	dTick.Status = data.nStatus;
+	dTick.PreClose = (data.nPreClose*1.0)/10000;
+	dTick.TodayOpen = (data.nOpen*1.0)/10000;
+	dTick.TodayHigh = (data.nHigh*1.0)/10000;
+	dTick.TodayLow = (data.nLow*1.0)/10000;
+	dTick.LastPrice = (data.nMatch*1.0)/10000;
+	dTick.WVAP = (data.iTurnover*1.0)/data.iVolume/10000;
+	dTick.UpperLimitPrice = (data.nHighLimited*1.0)/10000;
+	dTick.LowerLimitPrice = (data.nLowLimited*1.0)/10000;
+	dTick.Volume = data.nNumTrades;
+	Util::intArrayToDouble(data.nBidPrice, dTick.BidPrice, 10, 10000);
+	Util::intArrayToDouble(data.nBidVol, dTick.BidVol, 10, 10000);
+	Util::intArrayToDouble(data.nAskPrice, dTick.AskPrice, 10, 10000);
+	Util::intArrayToDouble(data.nAskVol, dTick.AskVol, 10, 10000);
+	dTick.ExchangeCode = exchangeCode;
+
+	return dTick;
 }
 
 void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
@@ -412,6 +504,7 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 	case MSG_SYS_QUOTATIONDATE_CHANGE:
 		break;
 	case MSG_SYS_MARKET_CLOSE:
+		g_marketReq->saveTodayMarket();
 		break;
 	case MSG_SYS_HEART_BEAT:
 		break;
@@ -430,11 +523,11 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 					//}
 					for (int i=0; i<nItems; i++)
 					{
-						TDF_CODE& code = pCodeTable[i];
+						TDF_CODE code = TDF_CODE(pCodeTable[i]);
 						if (m_marketCode.find(std::string(code.szWindCode))==m_marketCode.end())
 						{
-							m_marketCode.insert(std::map<std::string, TDF_CODE>::value_type
-								(std::string(code.szWindCode), code));
+							m_marketCode.insert(std::map<std::string, std::string>::value_type
+								(std::string(code.szWindCode), code.szCNName));
 						}
 					}
 					TDF_FreeArr(pCodeTable);
@@ -449,6 +542,44 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 	}
 }
 
+void NQ::MarketQueryRequest::saveTodayMarket()
+{
+	char today[32]  ="";
+	time_t time = std::time(NULL);
+	tm temptm;
+	localtime_s(&temptm, &time);
+	sprintf_s(today,"%d年%02d月%02d日",temptm.tm_year+1900,temptm.tm_mon+1,temptm.tm_mday);  
+	std::string strDataPath(cfgSettings.szDataDir, 0, sizeof(cfgSettings.szDataDir)-1);
+	strDataPath += std::string(today);
+	strDataPath += "行情数据文件.txt";
+
+	std::ofstream t_data = initDataFile(strDataPath, true);
+	//g_fsData.open(strDataPath.c_str(), std::ios_base::out);
+	if (!t_data.is_open())
+	{
+		throw OpenFileFailError(strDataPath.c_str());
+		return;
+	}
+	if (m_marketData.size() > 0)
+	{
+		for (std::map<std::string, TDF_MARKET_DATA>::iterator it = m_marketData.begin(); it != m_marketData.end(); ++it)
+		{
+			t_data << it->second.szCode << "," 
+				<< it->second.nPreClose << ","
+				<< it->second.nOpen << ","
+				<< it->second.nHigh << ","
+				<< it->second.nLow << ","
+				<< it->second.nHighLimited << ","
+				<< it->second.nLowLimited << ","
+				<< it->second.nMatch << ","
+				<< it->second.nNumTrades << ","
+				<< it->second.iVolume << ","
+				<< it->second.iTurnover << std::endl;
+		}
+	}
+	t_data.flush();
+	t_data.close();
+}
 
 bool NQ::MarketQueryRequest::dataModified(TDF_MARKET_DATA recentData){
 	bool flag = false;
@@ -474,31 +605,33 @@ bool NQ::MarketQueryRequest::dataModified(TDF_MARKET_DATA recentData){
 	return flag;
 }
 
-void NQ::MarketQueryRequest::callBackTick(std::string szWindCode)
+void NQ::MarketQueryRequest::callBackTick(NQ_ET::SQuote dTick)
 {
-	TDF_MARKET_DATA data = m_marketData.find(szWindCode)->second;
-	TDF_CODE code = m_marketCode.find(szWindCode)->second;
-	std::string name = code.szCNName;
-	char* market = code.szMarket;
+	/*
+	std::map<std::string, TDF_MARKET_DATA>::iterator it = m_marketData.find(szWindCode);
+	TDF_MARKET_DATA data = it->second;
+	std::string name = m_marketCode.find(szWindCode)->second;
+	int dotPos = szWindCode.find('.');
+	std::string market = szWindCode.substr(dotPos+1,szWindCode.length()-dotPos-1);
 	NQ_ET::EListedExchange exchangeCode;
-	if (strcmp(market,"SZ"))
+	if (market=="SZ")
 	{
-		exchangeCode = NQ_ET::EListedExchange::SZSE;
-	} else if (strcmp(market,"SH"))
+	exchangeCode = NQ_ET::EListedExchange::SZSE;
+	} else if (market=="SH")
 	{
-		exchangeCode = NQ_ET::EListedExchange::SHSE;
-	} else if (strcmp(market,"CF"))
+	exchangeCode = NQ_ET::EListedExchange::SHSE;
+	} else if (market=="CF")
 	{
-		exchangeCode = NQ_ET::EListedExchange::CFE;
-	} else if (strcmp(market,"CHF"))
+	exchangeCode = NQ_ET::EListedExchange::CFE;
+	} else if (market=="CHF")
 	{
-		exchangeCode = NQ_ET::EListedExchange::SHFE;
-	} else if (strcmp(market,"CZC"))
+	exchangeCode = NQ_ET::EListedExchange::SHFE;
+	} else if (market=="CZC")
 	{
-		exchangeCode = NQ_ET::EListedExchange::ZCE;
-	} else if (strcmp(market,"DCE"))
+	exchangeCode = NQ_ET::EListedExchange::ZCE;
+	} else if (market=="DCE")
 	{
-		exchangeCode = NQ_ET::EListedExchange::DCE;
+	exchangeCode = NQ_ET::EListedExchange::DCE;
 	}
 
 	NQ_ET::SQuote dTick;
@@ -522,12 +655,22 @@ void NQ::MarketQueryRequest::callBackTick(std::string szWindCode)
 	Util::intArrayToDouble(data.nAskPrice, dTick.AskPrice, 10, 10000);
 	Util::intArrayToDouble(data.nAskVol, dTick.AskVol, 10, 10000);
 	dTick.ExchangeCode = exchangeCode;
+	*/
+	//m_marketData.erase(it);
+	g_caller->OnData(dTick);
 
-	this->g_caller->OnData(dTick);
+	CLock cl(&m_cs);
+	m_threadCnt--;
 }
 
 bool NQ::MarketQueryRequest::subscribMarketData(std::string code, SubscribType type){
-	std::string szWindCode = getWindCode(code);
+	std::string szWindCode ;
+	if (code != "") {
+		szWindCode = getWindCode(code);
+	} else
+	{
+		szWindCode = "";
+	}
 	int result = TDF_SetSubscription(g_hTDF, szWindCode.c_str(), SUBSCRIPTION_STYLE(type));
 	if (result == TDF_ERR_SUCCESS) return true;
 	else return false;
@@ -559,10 +702,11 @@ bool NQ::MarketQueryRequest::subscribMarketData(std::vector<std::string>& codes,
 
 std::string NQ::MarketQueryRequest::getWindCode(std::string code)
 {
-	for(std::map<std::string, TDF_CODE>::iterator it=m_marketCode.begin(); it!=m_marketCode.end(); ++it){
-		if (it->second.szCode == code)
+	for(std::map<std::string, std::string>::iterator it=m_marketCode.begin(); it!=m_marketCode.end(); ++it){
+		std::string szWindCode = it->first;
+		if (szWindCode.substr(0,szWindCode.find('.')) == code)
 		{
-			return it->second.szWindCode;
+			return szWindCode;
 		}
 	}
 	return NULL;

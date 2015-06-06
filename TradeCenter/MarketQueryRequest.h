@@ -115,10 +115,18 @@ namespace NQ{
 		void setMarketCaller(NQ_ET::IDataInStream<NQ_ET::SQuote>* marketCaller){
 			g_caller = marketCaller;
 		}
+		// 断开连接
+		void close(){
+			if (g_hTDF)	TDF_Close(g_hTDF);
+		}
+		int m_threadCnt;
+		int max_threadCnt;
 
 	public:
-		// 证券代码，key万得代码，value代码元数据
-		static std::map<std::string, TDF_CODE> m_marketCode;
+		static CRITICAL_SECTION m_cs;
+		static MarketQueryRequest* g_marketReq;
+		// 证券代码，key万得代码，value公司名称
+		static std::map<std::string, std::string> m_marketCode;
 		// 行情数据，key万得代码，value行情数据
 		static std::map<std::string, TDF_MARKET_DATA> m_marketData;
 		// 行情数据回调函数
@@ -128,23 +136,30 @@ namespace NQ{
 		
 
 	private:
-		static MarketQueryRequest* g_marketReq;
 		ConfigSettings cfgSettings;
 
 		std::ofstream g_fsLog;
 		THANDLE g_hTDF;
+
+		MarketCaller* caller;
+		NQ_ET::IDataInStream<NQ_ET::SQuote>* g_caller;
 
 	private:
 		void LoadTDFSettings(const ConfigSettings& configObj,  TDF_OPEN_SETTING& settings);
 		void LoadProxyTDFSettings(const ConfigSettings& configObj, TDF_PROXY_SETTING& proxy_settings);
 		char* DeepCopy(const char*szIn);
 
-		static bool dataModified(TDF_MARKET_DATA recentData);
-		void callBackTick(std::string szWindCode);
+		void callBackTick(NQ_ET::SQuote dTick);
 		std::string getWindCode(std::string code);
 
-		MarketCaller* caller;
-		NQ_ET::IDataInStream<NQ_ET::SQuote>* g_caller;
+		void saveTodayMarket();
+		std::ofstream initDataFile(std::string path, bool isNew);
+
+	private:
+		static bool dataModified(TDF_MARKET_DATA recentData);
+		static NQ_ET::SQuote getTickData(TDF_MARKET_DATA& marketData);
+
+
 	};
 
 }
