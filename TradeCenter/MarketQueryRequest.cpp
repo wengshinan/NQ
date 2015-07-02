@@ -680,6 +680,7 @@ bool NQ::MarketQueryRequest::subscribMarketData(std::vector<std::string>& codes,
 {
 	std::string szWindCodes;
 	std::vector<std::string>::iterator it=codes.begin();
+	//20150630 modified
 	while(it != codes.end())
 	{
 		szWindCodes += *it;
