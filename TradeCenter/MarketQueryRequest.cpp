@@ -680,15 +680,16 @@ bool NQ::MarketQueryRequest::subscribMarketData(std::vector<std::string>& codes,
 {
 	std::string szWindCodes;
 	std::vector<std::string>::iterator it=codes.begin();
-	while(true)
+	while(it != codes.end())
 	{
 		szWindCodes += *it;
-		if (codes.erase(it)!=codes.end() && szWindCodes.length() < 1024){
+		it = codes.erase(it);
+		if (it != codes.end() && szWindCodes.length() < 1024){
 			szWindCodes += ";";
 		} else
 		{
 			int result = TDF_SetSubscription(g_hTDF, szWindCodes.c_str(), SUBSCRIPTION_STYLE(type));
-			while (result != TDF_ERR_SUCCESS)
+			if (result != TDF_ERR_SUCCESS)
 			{
 				return false;
 			}
