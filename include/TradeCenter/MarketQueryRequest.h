@@ -123,6 +123,11 @@ namespace NQ{
 		int max_threadCnt;
 		// 写当日运行日志
 		void writeLog(std::string content);
+		//查看连接状态
+		bool isConnected(){
+			if (g_hTDF) return true;
+			return false;
+		}
 
 	public:
 		static CRITICAL_SECTION m_cs;

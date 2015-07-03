@@ -244,10 +244,13 @@ int testMarketQuery()
 		while (true)
 		{
 			int flag;
+			demo.g_marketCenter->writeLog("-----------------------------");
 			std::cout << "1.全市场订阅行情" << std::endl;
 			std::cout << "2.设置订阅行情" << std::endl;
 			std::cout << "3.增加订阅行情" << std::endl;
 			std::cout << "4.删除订阅行情" << std::endl;
+			std::cout << "5.重新建立连接" << std::endl;
+			std::cout << "6.查看连接状态" << std::endl;
 			std::cout << "0.退出订阅行情" << std::endl;
 			std::cout << "请选择：" ;
 			std::cin >> flag;
@@ -278,7 +281,7 @@ int testMarketQuery()
 				if (demo.g_marketCenter->g_marketReq->subscribMarketData(stock, NQ::SubscribType::SUBSCRIPTION_ADD))
 					result = 1;
 				else result = 0;
-			} else 
+			} else if (flag == 4)
 			{
 				std::string stock;
 				std::cout << "输入需删除订阅的证券代码：" ;
@@ -286,9 +289,21 @@ int testMarketQuery()
 				if (demo.g_marketCenter->g_marketReq->subscribMarketData(stock, NQ::SubscribType::SUBSCRIPTION_DEL))
 					result = 1;
 				else result = 0;
+			} else if (flag == 5)
+			{
+				std::cout << "请求连接......." << std::endl;
+				demo.g_marketCenter->getConnection();
+				if (demo.g_marketCenter->isConnected()) std::cout << "已连接" << std::endl;
+				else std::cout << "未连接" << std::endl;
+			} else 
+			{
+				if (demo.g_marketCenter->isConnected()) std::cout << "已连接" << std::endl;
+				else std::cout << "未连接" << std::endl;
 			}
-			if (result == 1) std::cout << std::endl << "处理成功" << std::endl;
-			else std::cout << std::endl << "处理失败" << std::endl;
+			if (flag < 5 && flag > 0){
+				if (result == 1) std::cout << std::endl << "处理成功" << std::endl;
+				else std::cout << std::endl << "处理失败" << std::endl;
+			}
 			std::cout << "===============================================" << std::endl;
 
 		}

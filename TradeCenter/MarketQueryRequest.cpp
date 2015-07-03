@@ -268,7 +268,7 @@ void NQ::MarketQueryRequest::getConnection()
 	else
 	{
 		g_hTDF = TDF_Open(&open_settings, &nErr);
-		std::cout << "test" << std::endl;
+		//std::cout << "test" << std::endl;
 	}
 
 	//delete[] open_settings.szMarkets;
@@ -577,12 +577,49 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 		//g_marketReq->getConnection();
 		break;
 	case MSG_SYS_CONNECT_RESULT:
-		g_marketReq->writeLog("连接成功");
-		g_marketReq->g_hTDF = hTdf;
+		{
+			//g_marketReq->g_hTDF = hTdf;
+			TDF_CONNECT_RESULT* pConnResult = (TDF_CONNECT_RESULT*)pSysMsg->pData;
+			if (pConnResult && pConnResult->nConnResult)
+			{
+				g_marketReq->writeLog("连接成功!"); 
+				g_marketReq->writeLog("ip:         " + std::string(pConnResult->szIp));
+				g_marketReq->writeLog("port:       " + std::string(pConnResult->szPort));
+				g_marketReq->writeLog("user:       " + std::string(pConnResult->szUser));
+				g_marketReq->writeLog("ipasswordp: " + std::string(pConnResult->szPwd));
+			}
+			else
+			{
+				g_marketReq->writeLog("连接失败!"); 
+				g_marketReq->writeLog("ip:         " + std::string(pConnResult->szIp));
+				g_marketReq->writeLog("port:       " + std::string(pConnResult->szPort));
+				g_marketReq->writeLog("user:       " + std::string(pConnResult->szUser));
+				g_marketReq->writeLog("ipasswordp: " + std::string(pConnResult->szPwd));
+			}
+		}
 		break;
 	case MSG_SYS_LOGIN_RESULT:
-		g_marketReq->writeLog("登录成功");
-		g_marketReq->g_hTDF = hTdf;
+		{
+			//g_marketReq->writeLog("登录成功");
+			//g_marketReq->g_hTDF = hTdf;
+			TDF_LOGIN_RESULT* pLoginResult = (TDF_LOGIN_RESULT*)pSysMsg->pData;
+			if (pLoginResult && pLoginResult->nLoginResult)
+			{
+				g_marketReq->writeLog("登陆成功!");
+				g_marketReq->writeLog("登陆信息: " + std::string(pLoginResult->szInfo));
+				for (int i=0; i<pLoginResult->nMarkets; i++)
+				{
+					g_marketReq->writeLog("market:%s, dyn_date: "); 
+					g_marketReq->writeLog("   " + std::string(pLoginResult->szMarket[i])); 
+					g_marketReq->writeLog("   " + pLoginResult->nDynDate[i]);
+				}
+			}
+			else
+			{
+				g_marketReq->writeLog("登陆失败，原因: " 
+					+ std::string(pLoginResult->szInfo));
+			}
+		}
 		break;
 	case MSG_SYS_QUOTATIONDATE_CHANGE:
 		break;
