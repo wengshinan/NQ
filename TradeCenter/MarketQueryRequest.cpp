@@ -227,6 +227,8 @@ NQ::MarketQueryRequest::MarketQueryRequest(std::string strConfigFile){
 }
 
 NQ::MarketQueryRequest::~MarketQueryRequest(){
+	g_fsLog.flush();
+	g_fsLog.close();
 	m_marketCode.clear();
 	m_marketData.clear();
 	DeleteCriticalSection(&m_cs);
@@ -238,7 +240,7 @@ void NQ::MarketQueryRequest::setEnvironment()
 	TDF_SetEnv(TDF_ENVIRON_HEART_BEAT_INTERVAL, cfgSettings.nHeartBeatGap);
 	TDF_SetEnv(TDF_ENVIRON_MISSED_BEART_COUNT, cfgSettings.nMissedHeartBeatCount);
 	TDF_SetEnv(TDF_ENVIRON_OPEN_TIME_OUT, cfgSettings.nOpenTimeOut);
-
+	g_fsLog << "环境配置成功" << std::endl;
 }
 
 void NQ::MarketQueryRequest::getConnection()
@@ -266,6 +268,7 @@ void NQ::MarketQueryRequest::getConnection()
 	else
 	{
 		g_hTDF = TDF_Open(&open_settings, &nErr);
+		std::cout << "test" << std::endl;
 	}
 
 	//delete[] open_settings.szMarkets;
@@ -307,6 +310,7 @@ void NQ::MarketQueryRequest::getConnection()
 		{
 			//delete[] open_settings.szMarkets;
 			//delete[] open_settings.szSubScriptions;
+			writeLog("连接服务器失败");
 			throw ConnectFailError();
 			return;
 		}
@@ -423,6 +427,38 @@ void NQ::MarketQueryRequest::RecvData(THANDLE hTdf, TDF_MSG* pMsgHead)
 			}
 		}
 		break;
+	case MSG_DATA_INDEX:
+		{
+			assert(nItemSize == sizeof(TDF_INDEX_DATA));
+
+			for (int i = 0; i < nItemCount; i++)
+			{
+				TDF_INDEX_DATA* pLastIndex = GETRECORD(pMsgHead->pData,TDF_INDEX_DATA, i);
+				std::string szWindCode = std::string(pLastIndex->szWindCode);
+				/*
+				if (m_marketData.find(szWindCode)!=m_marketData.end()){
+					if (!dataModified(*pLastMarket)) {
+						continue;
+					}
+				}else
+				{
+					m_marketData.insert(std::map<std::string, TDF_MARKET_DATA>::value_type(szWindCode, *pLastMarket));
+				}
+				*/
+				NQ_ET::SQuote tickData = getTickData(*pLastIndex);
+				while (g_marketReq->m_threadCnt > g_marketReq->max_threadCnt)
+				{
+					Sleep(100);
+				}
+				CLock cl(&m_cs);
+				g_marketReq->m_threadCnt++;
+				if (g_marketReq)
+				{
+					std::thread tmpThread(&NQ::MarketQueryRequest::callBackTick, g_marketReq, tickData);
+					tmpThread.detach();
+				}
+			}
+		}
 	default:
 		{
 			//assert(0);
@@ -431,13 +467,8 @@ void NQ::MarketQueryRequest::RecvData(THANDLE hTdf, TDF_MSG* pMsgHead)
 	}
 }
 
-NQ_ET::SQuote NQ::MarketQueryRequest::getTickData(TDF_MARKET_DATA& data)
+NQ_ET::EListedExchange NQ::MarketQueryRequest::findMarket(std::string market)
 {
-	std::string szWindCode = data.szWindCode;
-	std::string name = m_marketCode.find(szWindCode)->second;
-
-	int dotPos = szWindCode.find('.');
-	std::string market = szWindCode.substr(dotPos+1,szWindCode.length()-dotPos-1);
 	NQ_ET::EListedExchange exchangeCode;
 	if (market=="SZ")
 	{
@@ -458,8 +489,53 @@ NQ_ET::SQuote NQ::MarketQueryRequest::getTickData(TDF_MARKET_DATA& data)
 	{
 		exchangeCode = NQ_ET::EListedExchange::DCE;
 	}
+	return exchangeCode;
+}
+
+NQ_ET::SQuote NQ::MarketQueryRequest::getTickData(TDF_INDEX_DATA& data)
+{
+	NQ_ET::SQuote dTick;
+	std::string szWindCode = data.szWindCode;
+	int dotPos = szWindCode.find('.');
+	std::string market = szWindCode.substr(dotPos+1,szWindCode.length()-dotPos-1);
+	NQ_ET::EListedExchange exchangeCode = findMarket(market);
+	
+	dTick.StkCode = data.szCode;
+	dTick.StkName = "";
+	dTick.CurrentDate = data.nActionDay;
+	dTick.CurrentTime = data.nTime;
+	dTick.PreClose = (1.0*data.nPreCloseIndex)/10000;
+	dTick.TodayOpen = (1.0*data.nOpenIndex) / 10000;
+	dTick.TodayHigh = (1.0*data.nHighIndex) / 10000;
+	dTick.TodayLow = (1.0*data.nLowIndex) / 10000;
+	dTick.LastPrice = (1.0*data.nLastIndex) / 10000;
+	dTick.WVAP = (1.0*data.iTurnover)/data.iTotalVolume/10000;
+	dTick.Volume = data.iTotalVolume;
+	dTick.ExchangeCode = exchangeCode;
+	
+	//置空
+	dTick.Status = 0;
+	dTick.UpperLimitPrice = 0;
+	dTick.LowerLimitPrice = 0;
+	unsigned int tmp[10] = {0,0,0,0,0,0,0,0,0,0};
+	Util::intArrayToDouble(tmp, dTick.BidPrice, 10, 10000);
+	Util::intArrayToDouble(tmp, dTick.BidVol, 10, 10000);
+	Util::intArrayToDouble(tmp, dTick.AskPrice, 10, 10000);
+	Util::intArrayToDouble(tmp, dTick.AskVol, 10, 10000);
+
+	return dTick;
 
 
+}
+
+NQ_ET::SQuote NQ::MarketQueryRequest::getTickData(TDF_MARKET_DATA& data)
+{
+	std::string szWindCode = data.szWindCode;
+	std::string name = m_marketCode.find(szWindCode)->second;
+
+	int dotPos = szWindCode.find('.');
+	std::string market = szWindCode.substr(dotPos+1,szWindCode.length()-dotPos-1);
+	NQ_ET::EListedExchange exchangeCode = findMarket(market);
 
 	NQ_ET::SQuote dTick;
 
@@ -496,14 +572,22 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 	switch (pSysMsg->nDataType)
 	{
 	case MSG_SYS_DISCONNECT_NETWORK:
+		g_marketReq->writeLog("断开连接");
+		//g_marketReq->g_hTDF = NULL;
+		//g_marketReq->getConnection();
 		break;
 	case MSG_SYS_CONNECT_RESULT:
+		g_marketReq->writeLog("连接成功");
+		g_marketReq->g_hTDF = hTdf;
 		break;
 	case MSG_SYS_LOGIN_RESULT:
+		g_marketReq->writeLog("登录成功");
+		g_marketReq->g_hTDF = hTdf;
 		break;
 	case MSG_SYS_QUOTATIONDATE_CHANGE:
 		break;
 	case MSG_SYS_MARKET_CLOSE:
+		g_marketReq->writeLog("闭市");
 		g_marketReq->saveTodayMarket();
 		break;
 	case MSG_SYS_HEART_BEAT:
@@ -667,6 +751,10 @@ bool NQ::MarketQueryRequest::subscribMarketData(std::string code, SubscribType t
 	std::string szWindCode ;
 	if (code != "") {
 		szWindCode = getWindCode(code);
+		if (szWindCode == "") {
+			writeLog("不存在" + code + "的代码");
+			return false;
+		}
 	} else
 	{
 		szWindCode = "";
@@ -679,14 +767,16 @@ bool NQ::MarketQueryRequest::subscribMarketData(std::string code, SubscribType t
 bool NQ::MarketQueryRequest::subscribMarketData(std::vector<std::string>& codes, SubscribType type)
 {
 	std::string szWindCodes;
+	std::string tempCode;
 	std::vector<std::string>::iterator it=codes.begin();
 	//20150630 modified
 	while(it != codes.end())
 	{
-		szWindCodes += *it;
+		tempCode = getWindCode(*it);
+		szWindCodes += tempCode;
 		it = codes.erase(it);
 		if (it != codes.end() && szWindCodes.length() < 1024){
-			szWindCodes += ";";
+			if (tempCode != "")	szWindCodes += ";";
 		} else
 		{
 			int result = TDF_SetSubscription(g_hTDF, szWindCodes.c_str(), SUBSCRIPTION_STYLE(type));
@@ -711,5 +801,13 @@ std::string NQ::MarketQueryRequest::getWindCode(std::string code)
 			return szWindCode;
 		}
 	}
-	return NULL;
+	return "";
+}
+
+
+
+void NQ::MarketQueryRequest::writeLog(std::string content) 
+{
+	g_fsLog << content << std::endl;
+	g_fsLog.flush();
 }

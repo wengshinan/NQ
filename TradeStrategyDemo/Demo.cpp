@@ -8,7 +8,7 @@ Demo::Demo(void)
 
 Demo::~Demo(void)
 {
-	g_marketCenter->close();
+	if (g_marketCenter) g_marketCenter->close();
 	delete g_marketCenter;
 }
 
@@ -200,7 +200,7 @@ int testTradeCenter(){
 		std::cout << e.what();
 		return 1;
 	}
-	return 1;
+	return 0;
 }
 
 
@@ -239,11 +239,11 @@ int testMarketQuery()
 	try{
 		result = demo.init("E:/Workspace/TradeCenter/ThirdParty/TDFEasyDemo.ini");
 		//result = demo.reqMarketQuery();
+		std::cout << "===========按任意键进入订阅============" ;
 		getchar();
 		while (true)
 		{
 			int flag;
-			std::cout << std::endl;
 			std::cout << "1.全市场订阅行情" << std::endl;
 			std::cout << "2.设置订阅行情" << std::endl;
 			std::cout << "3.增加订阅行情" << std::endl;
@@ -289,6 +289,7 @@ int testMarketQuery()
 			}
 			if (result == 1) std::cout << std::endl << "处理成功" << std::endl;
 			else std::cout << std::endl << "处理失败" << std::endl;
+			std::cout << "===============================================" << std::endl;
 
 		}
 

@@ -121,6 +121,8 @@ namespace NQ{
 		}
 		int m_threadCnt;
 		int max_threadCnt;
+		// 写当日运行日志
+		void writeLog(std::string content);
 
 	public:
 		static CRITICAL_SECTION m_cs;
@@ -157,7 +159,9 @@ namespace NQ{
 
 	private:
 		static bool dataModified(TDF_MARKET_DATA recentData);
+		static NQ_ET::EListedExchange findMarket(std::string market);
 		static NQ_ET::SQuote getTickData(TDF_MARKET_DATA& marketData);
+		static NQ_ET::SQuote getTickData(TDF_INDEX_DATA& indexData);
 
 
 	};
