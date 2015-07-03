@@ -293,6 +293,7 @@ int testMarketQuery()
 			{
 				std::cout << "请求连接......." << std::endl;
 				demo.g_marketCenter->getConnection();
+				Sleep(3*1000);
 				if (demo.g_marketCenter->isConnected()) std::cout << "已连接" << std::endl;
 				else std::cout << "未连接" << std::endl;
 			} else 
