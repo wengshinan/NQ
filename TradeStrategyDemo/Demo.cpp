@@ -127,7 +127,7 @@ int testTradeCenter(){
 			std::cout << "3.限价下单" << std::endl;
 			std::cout << "4.撤单请求" << std::endl;
 			std::cout << "5.持仓查询" << std::endl;
-			std::cout << "q.退出查询" << std::endl;
+			std::cout << "0.退出查询" << std::endl;
 			char ch;
 			std::cin >> ch;
 			if (ch == '1')
@@ -187,9 +187,9 @@ int testTradeCenter(){
 					std::cout << query.response.errorMessage << std::endl;
 				}
 			}
-			else if (ch == 'q')
+			else if (ch == '0')
 			{
-				std::cout<<"按任意键退出程序";
+				std::cout<<"按任意键退出fix测试";
 				getchar();
 				break;
 			}
@@ -239,7 +239,7 @@ int testMarketQuery()
 	try{
 		result = demo.init("E:/Workspace/TradeCenter/ThirdParty/TDFEasyDemo.ini");
 		//result = demo.reqMarketQuery();
-		std::cout << "===========按任意键进入订阅============" ;
+		std::cout << "===========按任意键进入订阅============" << std::endl ;
 		getchar();
 		while (true)
 		{
@@ -309,8 +309,6 @@ int testMarketQuery()
 
 		}
 
-
-
 		if(getchar()){
 			std::cout << "断开连接" << std::endl;
 			std::cout << demo.g_marketCenter->m_marketData.size() << std::endl;
@@ -326,11 +324,26 @@ int testMarketQuery()
 
 int main()
 {
-	//测试fix
-	//testTradeCenter();
-
-	//测试行情
-	testMarketQuery();
+	while(true){
+		std::cout << "------------" << std::endl;
+		std::cout << "1 测试fix" << std::endl;
+		std::cout << "2 测试wind" << std::endl;
+		std::cout << "0 退出测试" << std::endl;
+		std::cout << "选择：";
+		int flag = 0;
+		std::cin >> flag;
+		if (flag == 1)
+		{
+			//测试fix
+			testTradeCenter();
+		} else if (flag == 2){
+			//测试行情
+			testMarketQuery();
+		} else {
+			break;
+		}
+		std::cout << std::endl << std::endl;
+	}
 
 	/*
 	std::string szCode = "000001.SZ";
@@ -339,5 +352,6 @@ int main()
 	std::string market = szCode.substr(szCode.find('.')+1,szCode.length()-i1-1);
 	std::cout << market << std::endl;
 	*/
+	std::cout << "按任意键结束" << std::endl;
 	getchar();
 }
