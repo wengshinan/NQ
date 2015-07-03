@@ -2,6 +2,7 @@
 
 std::map<std::string, std::string> NQ::MarketQueryRequest::m_marketCode;
 std::map<std::string, TDF_MARKET_DATA> NQ::MarketQueryRequest::m_marketData;
+std::map<std::string, TDF_INDEX_DATA> NQ::MarketQueryRequest::m_indexData;
 NQ::MarketQueryRequest* NQ::MarketQueryRequest::g_marketReq;
 CRITICAL_SECTION NQ::MarketQueryRequest::m_cs;
 
@@ -231,6 +232,7 @@ NQ::MarketQueryRequest::~MarketQueryRequest(){
 	g_fsLog.close();
 	m_marketCode.clear();
 	m_marketData.clear();
+	m_indexData.clear();
 	DeleteCriticalSection(&m_cs);
 }
 
@@ -435,16 +437,11 @@ void NQ::MarketQueryRequest::RecvData(THANDLE hTdf, TDF_MSG* pMsgHead)
 			{
 				TDF_INDEX_DATA* pLastIndex = GETRECORD(pMsgHead->pData,TDF_INDEX_DATA, i);
 				std::string szWindCode = std::string(pLastIndex->szWindCode);
-				/*
-				if (m_marketData.find(szWindCode)!=m_marketData.end()){
-					if (!dataModified(*pLastMarket)) {
-						continue;
-					}
-				}else
-				{
-					m_marketData.insert(std::map<std::string, TDF_MARKET_DATA>::value_type(szWindCode, *pLastMarket));
+				if (m_indexData.find(szWindCode)!=m_indexData.end()){
+					m_indexData.erase(m_indexData.find(szWindCode));
 				}
-				*/
+				m_indexData.insert(std::map<std::string, TDF_INDEX_DATA>::value_type(szWindCode, *pLastIndex));
+				
 				NQ_ET::SQuote tickData = getTickData(*pLastIndex);
 				while (g_marketReq->m_threadCnt > g_marketReq->max_threadCnt)
 				{
@@ -586,7 +583,7 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 				g_marketReq->writeLog("ip:         " + std::string(pConnResult->szIp));
 				g_marketReq->writeLog("port:       " + std::string(pConnResult->szPort));
 				g_marketReq->writeLog("user:       " + std::string(pConnResult->szUser));
-				g_marketReq->writeLog("ipasswordp: " + std::string(pConnResult->szPwd));
+				g_marketReq->writeLog("password:   " + std::string(pConnResult->szPwd));
 			}
 			else
 			{
@@ -594,7 +591,7 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 				g_marketReq->writeLog("ip:         " + std::string(pConnResult->szIp));
 				g_marketReq->writeLog("port:       " + std::string(pConnResult->szPort));
 				g_marketReq->writeLog("user:       " + std::string(pConnResult->szUser));
-				g_marketReq->writeLog("ipasswordp: " + std::string(pConnResult->szPwd));
+				g_marketReq->writeLog("password:   " + std::string(pConnResult->szPwd));
 			}
 		}
 		break;
@@ -608,10 +605,9 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 				g_marketReq->writeLog("登陆成功!");
 				g_marketReq->writeLog("登陆信息: " + std::string(pLoginResult->szInfo));
 				for (int i=0; i<pLoginResult->nMarkets; i++)
-				{
-					g_marketReq->writeLog("market:%s, dyn_date: "); 
-					g_marketReq->writeLog("   " + std::string(pLoginResult->szMarket[i])); 
-					g_marketReq->writeLog("   " + pLoginResult->nDynDate[i]);
+				{ 
+					g_marketReq->writeLog("market:   " + std::string(pLoginResult->szMarket[i])); 
+					g_marketReq->writeLog("dyn_date: " + pLoginResult->nDynDate[i]);
 				}
 			}
 			else
@@ -695,6 +691,23 @@ void NQ::MarketQueryRequest::saveTodayMarket()
 				<< it->second.nMatch << ","
 				<< it->second.nNumTrades << ","
 				<< it->second.iVolume << ","
+				<< it->second.iTurnover << std::endl;
+		}
+	}
+	if (m_marketData.size() > 0)
+	{
+		for (std::map<std::string, TDF_INDEX_DATA>::iterator it = m_indexData.begin(); it != m_indexData.end(); ++it)
+		{
+			t_data << it->second.szCode << "," 
+				<< it->second.nPreCloseIndex << ","
+				<< it->second.nOpenIndex << ","
+				<< it->second.nHighIndex << ","
+				<< it->second.nLowIndex << ","
+				<< ","
+				<< ","
+				<< ","
+				<< ","
+				<< it->second.iTotalVolume << ","
 				<< it->second.iTurnover << std::endl;
 		}
 	}

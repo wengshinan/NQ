@@ -136,6 +136,8 @@ namespace NQ{
 		static std::map<std::string, std::string> m_marketCode;
 		// 行情数据，key万得代码，value行情数据
 		static std::map<std::string, TDF_MARKET_DATA> m_marketData;
+		// 指数行情数据，key万得代码，value行情数据
+		static std::map<std::string, TDF_INDEX_DATA> m_indexData;
 		// 行情数据回调函数
 		static void RecvData(THANDLE hTdf, TDF_MSG* pMsgHead);
 		// 系统消息回调函数
