@@ -1,0 +1,68 @@
+﻿生成启动时间为 2015/7/26 12:37:41。
+     1>项目“E:\Workspace\TradeCenter\TradeCenter\TradeCenter.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>ClCompile:
+         D:\Program Files\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IE:\Workspace\TradeCenter\ThirdParty\tdfapi\include /IE:\Workspace\quickfix\include /IE:\Workspace\TradeCenter\ThirdParty\openssl\include /Zi /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt MarketInterface.cpp MarketQueryRequest.cpp TradeApplication.cpp TradeBase.cpp TradeCenter.cpp
+         TradeCenter.cpp
+         TradeBase.cpp
+         TradeApplication.cpp
+         MarketQueryRequest.cpp
+     1>MarketQueryRequest.cpp(146): warning C4800: “int”: 将值强制为布尔值“true”或“false”(性能警告)
+     1>MarketQueryRequest.cpp(311): warning C4018: “>”: 有符号/无符号不匹配
+     1>MarketQueryRequest.cpp(405): warning C4018: “<”: 有符号/无符号不匹配
+     1>MarketQueryRequest.cpp(436): warning C4018: “<”: 有符号/无符号不匹配
+     1>MarketQueryRequest.cpp(510): warning C4244: “=”: 从“__int64”转换到“double”，可能丢失数据
+     1>MarketQueryRequest.cpp(641): warning C4018: “<”: 有符号/无符号不匹配
+         MarketInterface.cpp
+         正在生成代码...
+       Lib:
+         D:\Program Files\Microsoft Visual Studio 11.0\VC\bin\Lib.exe /OUT:"E:\Workspace\TradeCenter\Release\TradeCenter.lib" ws2_32.lib quickfix.lib libeay32MT.lib TDFAPI25.lib /LIBPATH:E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib /LIBPATH:E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static /LIBPATH:E:\Workspace\TradeCenter\ThirdParty\quickfix\lib /NOLOGO Release\MarketInterface.obj
+         Release\MarketQueryRequest.obj
+         Release\TradeApplication.obj
+         Release\TradeBase.obj
+         Release\TradeCenter.obj
+         E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\quickfix.lib
+     1>quickfix.lib(MySQLLog.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>quickfix.lib(MySQLStore.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>quickfix.lib(OdbcLog.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>quickfix.lib(OdbcStore.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>quickfix.lib(PostgreSQLLog.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>quickfix.lib(PostgreSQLStore.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>quickfix.lib(stdafx.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>libeay32MT.lib(fips_ers.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>libeay32MT.lib(ecp_nistp224.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>libeay32MT.lib(ecp_nistp256.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>libeay32MT.lib(ecp_nistp521.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>libeay32MT.lib(ecp_nistputil.obj) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>TDFAPI25.lib(TDFAPI25.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR 已在 ws2_32.lib(WS2_32.dll) 中定义；已忽略第二个定义
+     1>TDFAPI25.lib(TDFAPI25.dll) : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+     1>MarketInterface.obj : warning LNK4221: 此对象文件未定义任何之前未定义的公共符号，因此任何耗用此库的链接操作都不会使用此文件
+         TradeCenter.vcxproj -> E:\Workspace\TradeCenter\Release\TradeCenter.lib
+       PostBuildEvent:
+         echo test\ > EXCLUDE
+         echo stdafx.h >> EXCLUDE
+         echo release\ >> EXCLUDE
+         echo debug\ >> EXCLUDE
+         xcopy *.h /S/Y/E/I /EXCLUDE:EXCLUDE ..\include\TradeCenter
+         del /F EXCLUDE
+         
+         :VCEnd
+         E:CancelRequest.h
+         E:FundPositionsQueryRequest.h
+         E:Lock.h
+         E:MarketInterface.h
+         E:MarketQueryRequest.h
+         E:NewOrderSingle.h
+         E:OrderQueryRequest.h
+         E:TradeApplication.h
+         E:TradeBase.h
+         E:TradeCenter.h
+         E:TradeEntity.h
+         E:TradeError.h
+         E:TradeInterface.h
+         E:Util.h
+         复制了 14 个文件
+     1>已完成生成项目“E:\Workspace\TradeCenter\TradeCenter\TradeCenter.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:20.53

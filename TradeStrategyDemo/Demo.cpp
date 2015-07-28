@@ -94,8 +94,8 @@ int Demo::OnRespFundPosQuery(AccountNo user, NQ::FundPosQueryResponse response)
 int Demo::LoadUser()
 {
 	g_user = g_tradeCenter.init(
-		"E:/Workspace/TradeCenter/ThirdParty/AppConfig.ini",
-		"E:/Workspace/TradeCenter/ThirdParty/tradeclient.cfg",
+		"AppConfig.ini",
+		"tradeclient.cfg",
 		this);
 	std::cout<<g_user<<std::endl;
 
@@ -237,7 +237,7 @@ int testMarketQuery()
 	Demo demo;
 	int result = 0;
 	try{
-		result = demo.init("E:/Workspace/TradeCenter/ThirdParty/TDFEasyDemo.ini");
+		result = demo.init("TDFEasyDemo.ini");
 		//result = demo.reqMarketQuery();
 		std::cout << "===========按任意键进入订阅============" << std::endl ;
 		getchar();

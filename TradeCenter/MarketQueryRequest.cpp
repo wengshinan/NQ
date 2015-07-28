@@ -607,7 +607,7 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 				for (int i=0; i<pLoginResult->nMarkets; i++)
 				{ 
 					g_marketReq->writeLog("market:   " + std::string(pLoginResult->szMarket[i])); 
-					g_marketReq->writeLog("dyn_date: " + pLoginResult->nDynDate[i]);
+					g_marketReq->writeLog("dyn_date: " + std::to_string(pLoginResult->nDynDate[i]));
 				}
 			}
 			else

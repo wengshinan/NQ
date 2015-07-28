@@ -1,25 +1,41 @@
-#ifndef MARKET_INTERFACE_H
-#define MARKET_INTERFACE_H
+/////////////////////////////////
+// Interface in equity trading vehicle
+// NQ_ET is the namespace for Newton Quant Equity Trading System
+///////////////////////////////////////
+// Coded & designed by R.Cao, PhD, CFA
+// All rights reserved by NewtonQuant LLP 2015
+//////////////////////////////////////////////
 
+#ifndef EQUITYINTERFACE_H
+#define EQUITYINTERFACE_H
 
-#include <string>
 #include "TradeCenter.h"
+#include <thread>
+#include <mutex>
+#include <string>
 #include <vector>
-#include "TDFAPIStruct.h"
-#include "TDFAPI.h"
-#include <assert.h>
+#include <map>
 
 namespace NQ_ET{
 	//持仓方向
 	enum EPosDir
 	{
-		PosLONG, PosSHORT, PosCLEAR
+		PosLONG = 1, PosSHORT = -1, PosCLEAR
 	};
 
 	//交易方向
 	enum ETradeDir
 	{
 		TDBUY,TDSELL,TDUNKNOWN
+	};
+
+	//交易信号类型
+	enum ESignalStatus
+	{
+		SSUninitiated,	//用于未初始化交易信号，撮合器不处理
+		SSContigent,	//触发类条件单，顺向类型
+		SSPending,		//盈利平仓单类型，仅用于利润锁定
+		SSImmediate		//非条件单，既包括需立即成交类型也包括传统限价单
 	};
 
 	//交易所
@@ -34,13 +50,22 @@ namespace NQ_ET{
 		ZCE   //郑州商品交易所
 	};
 
+	//交易策略类型
+	enum EStrat
+	{
+		TSDAYOFWEEK = 1, 
+		TSGAP = 2, 
+		TSGSV = 3,
+		TSBASIS = 4
+	};
+
 	//Tick结构体（仅适用于股票Lv2十档行情）
 	struct SQuote
 	{
 		//股票代码
-		std::string StkCode;
-		//公司名称
-		std::string StkName;
+		StockCode StkCode;
+		//股票代码
+		StockCode StkName;
 		//日期（可为本机时间）
 		int	CurrentDate;
 		//时间
@@ -48,31 +73,31 @@ namespace NQ_ET{
 		//最新状态（需至少区分正常交易时段、集合竞价和非交易时段）
 		int Status;
 		//前收盘价
-		double PreClose;
+		StockPrice PreClose;
 		//今日开盘价
-		double TodayOpen;
+		StockPrice TodayOpen;
 		//今日最高价
-		double TodayHigh;
+		StockPrice TodayHigh;
 		//今日最低价
-		double TodayLow;
+		StockPrice TodayLow;
 		//当前价格
-		double LastPrice;
+		StockPrice LastPrice;
 		//成交均价
-		double WVAP;
+		StockPrice WVAP;
 		//涨停板价格
-		double UpperLimitPrice;
+		StockPrice UpperLimitPrice;
 		//跌停板价格
-		double LowerLimitPrice;
+		StockPrice LowerLimitPrice;
 		//当前成交量（成交笔数）
-		int Volume;
+		StockNum Volume;
 		//申买价
-		double BidPrice[10];
+		StockPrice BidPrice[10];
 		//申买量
-		double BidVol[10];
+		StockNum BidVol[10];
 		//申卖价
-		double AskPrice[10];
+		StockPrice AskPrice[10];
 		//申卖量
-		double AskVol[10];
+		StockNum AskVol[10];
 		//交易所
 		EListedExchange ExchangeCode;
 	};
@@ -82,8 +107,6 @@ namespace NQ_ET{
 	{
 		//股票代码
 		std::string StkCode;
-		//公司名称
-		std::string StkName;
 		//日期（可为本机时间）
 		int	CurrentDate;
 		//时间
@@ -107,8 +130,6 @@ namespace NQ_ET{
 	{
 		//股票代码
 		std::string StkCode;
-		//公司名称
-		std::string StkName;
 		//日期（可为本机时间）
 		int	CurrentDate;
 		//时间
@@ -128,8 +149,6 @@ namespace NQ_ET{
 	{
 		//股票代码
 		std::string StkCode;
-		//公司名称
-		std::string StkName;
 		//日期（可为本机时间）
 		int	CurrentDate;
 		//时间
@@ -148,19 +167,17 @@ namespace NQ_ET{
 	struct SBar
 	{
 		//股票代码
-		std::string StkCode;
-		//公司名称
-		std::string StkName;
+		StockCode StkCode;
 		//开盘价
-		double Oppr;
+		StockPrice Oppr;
 		//最高价
-		double Hipr;
+		StockPrice Hipr;
 		//最低价
-		double Lopr;
+		StockPrice Lopr;
 		//收盘价
-		double Clpr;
+		StockPrice Clpr;
 		//成交量
-		int Volume;
+		StockNum Volume;
 		//频率
 		int BarSize;
 	};
@@ -168,22 +185,42 @@ namespace NQ_ET{
 	//交易信号结构体
 	struct Signal
 	{
+		//股票代码
+		StockCode StkCode;
 		//策略名称
-		std::string Strat;
+		EStrat Strat;
 		//持仓方向
 		EPosDir D;
 		//持仓数量
-		int Shares;
-		//最后成交价格
-		double LastTradePrice;
+		StockNum Shares;
+		//目标成交价格
+		StockPrice TargetPrice;
 		//成交数量
-		int ExecShares;
+		StockNum ExecShares;
 		//最后下单结果
 		NQ::OrderStatus LastOrderStatus;
-
+		//交易信号的当前状态
+		ESignalStatus CurrentSignalStatus;
+		//成交均价
+		StockPrice AvgTradePrice;
+		
 		//构造函数
-		Signal(std::string s){ Strat = s; }
+		Signal(EStrat s){ Strat = s; }
 		Signal(){}
+
+		//复制构造函数
+		Signal(const Signal& s)
+		{
+			this->StkCode = s.StkCode;
+			this->Strat = s.Strat;
+			this->D = s.D;
+			this->Shares = s.Shares;
+			this->TargetPrice = s.TargetPrice;
+			this->ExecShares = s.ExecShares;
+			this->LastOrderStatus = s.LastOrderStatus;
+			this->CurrentSignalStatus = s.CurrentSignalStatus;
+			this->AvgTradePrice = s.AvgTradePrice;
+		}
 	};
 
 	//数据输出模板
@@ -194,20 +231,79 @@ namespace NQ_ET{
 		virtual bool OnData(T& data) = 0;
 	};
 
+	//数据分发模板
+	template<class T>
+	class IDataOutStream
+	{
+	public:
+		IDataOutStream()
+		{
+			Index = 0;
+		}
+
+		int Register(IDataInStream<T>* pOutput)
+		{
+			std::lock_guard<std::mutex> l (m_Lock);
+			++Index;
+			m_pOutputs[Index] = pOutput;
+			return Index;
+		}
+
+		void Deregister(int i)
+		{
+			std::lock_guard<std::mutex> l (m_Lock);
+			std::map<int, IDataInStream<T>*>::iterator it = m_pOutputs.find(i);
+
+			if(it != m_pOutputs.end())
+			{
+				m_pOutputs.erase(it);
+			}
+		}
+
+	protected:
+		void Distribute(T& data)
+		{
+			std::lock_guard<std::mutex> l (m_Lock);
+			for(std::map<int, IDataInStream<T>*>::iterator it = m_pOutputs.begin(); it != m_pOutputs.end(); ++it)
+			{
+				IDataInStream<T>* output = it->second;
+				std::thread t(&NQ_ET::IDataInStream<T>::OnData, output, data);
+				t.detach();
+			}
+		}
+	private:
+		std::map<int, IDataInStream<T>*> m_pOutputs;
+		int Index;
+
+		std::mutex m_Lock;
+	};
+
 	//交易信号输出
 	class IPositioner
 	{
 	public:
-		virtual	void OnReqUpdateStratPosition(Signal s) = 0;
+		virtual	void OnReqUpdateStratPosition(Signal& s) = 0;
 	};
-
+	
 	//交易策略模板
 	class IStrategy
 	{
 	public:
-		virtual void ReqLoad(IPositioner* pPositioner) = 0;
-		virtual	void ReqUnload() = 0;
-		virtual void OnRespUpdatePosition(Signal s) = 0;
+		void ReqLoad(IPositioner* pPositioner)
+		{
+			if(pPositioner)
+			{
+				IPositioners.push_back(pPositioner);
+			}
+		}
+
+		void ReqUnload()
+		{
+			//卸载所有交易接口
+			IPositioners.clear();
+		}
+
+		virtual void OnRespUpdatePosition(Signal& s) = 0;
 
 		void AddInput(IPositioner* pPositioner)
 		{
@@ -215,9 +311,11 @@ namespace NQ_ET{
 			{
 				IPositioners.push_back(pPositioner);
 			}
-		}
+		}	
+
+		EStrat GetStratType(){return ISignal.Strat;}
 	protected:
-		void ReqUpdateStratPosition(Signal s)
+		void ReqUpdateStratPosition(Signal& s)
 		{
 			for (std::vector<IPositioner*>::iterator it = IPositioners.begin(); it != IPositioners.end(); ++it)
 			{
@@ -227,6 +325,7 @@ namespace NQ_ET{
 		}
 
 		std::vector<IPositioner*> IPositioners;
+		Signal ISignal;
 	};
 }
 
@@ -243,4 +342,4 @@ namespace NQ{
 	};
 }
 
-#endif // !MARKET_INTERFACE_H
+#endif

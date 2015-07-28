@@ -1,0 +1,79 @@
+﻿生成启动时间为 2015/7/26 10:56:11。
+     1>项目“E:\Workspace\TradeCenter\TradeStrategyDemo\TradeStrategyDemo.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>ClCompile:
+         D:\Program Files\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /IE:\Workspace\TradeCenter\ThirdParty\tdfapi\include /IE:\Workspace\TradeCenter\ThirdParty\openssl\include /IE:\Workspace\TradeCenter\ThirdParty\quickfix\include /IE:\Workspace\TradeCenter\include /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc110.pdb" /Gd /TP /errorReport:prompt Demo.cpp
+         Demo.cpp
+       Link:
+         D:\Program Files\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Workspace\TradeCenter\x64\Release\TradeStrategyDemo.exe" /INCREMENTAL /NOLOGO /LIBPATH:E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib /LIBPATH:E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static /LIBPATH:E:\Workspace\TradeCenter\ThirdParty\quickfix\lib /LIBPATH:E:\Workspace\TradeCenter\x64\Release TradeCenter.lib quickfix.lib ws2_32.lib libeay32MD.lib TDFAPI25.lib tdfapi_jni.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\Workspace\TradeCenter\x64\Release\TradeStrategyDemo.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Workspace\TradeCenter\x64\Release\TradeStrategyDemo.lib" /MACHINE:X64 x64\Release\Demo.obj
+     1>TradeCenter.lib(SessionSettings.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(SessionSettings.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(Initiator.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(Initiator.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(SocketInitiator.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(SocketInitiator.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(FileStore.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(FileStore.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(FileLog.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(FileLog.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(Dictionary.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(Dictionary.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(Settings.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(Settings.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(Utility.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(Utility.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(FieldTypes.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(FieldTypes.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(TimeRange.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(TimeRange.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(Session.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(Session.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(SessionFactory.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(SessionFactory.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(HttpServer.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(HttpServer.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(SocketMonitor.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(SocketMonitor.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(SocketConnector.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(SocketConnector.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(SocketConnection.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(SocketConnection.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(MessageStore.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(MessageStore.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(MessageSorters.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(MessageSorters.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(FieldMap.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(FieldMap.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(Message.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(Message.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(DataDictionary.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(DataDictionary.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(DataDictionaryProvider.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(DataDictionaryProvider.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(SocketServer.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(SocketServer.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(HttpConnection.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(HttpConnection.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(Parser.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(Parser.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(Acceptor.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(Acceptor.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(PUGIXML_DOMDocument.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(PUGIXML_DOMDocument.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(HttpParser.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(HttpParser.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(HttpMessage.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(HttpMessage.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>TradeCenter.lib(pugixml.obj) : error LNK2038: 检测到“_ITERATOR_DEBUG_LEVEL”的不匹配项: 值“0”不匹配值“2”(Demo.obj 中)
+     1>TradeCenter.lib(pugixml.obj) : error LNK2038: 检测到“RuntimeLibrary”的不匹配项: 值“MD_DynamicRelease”不匹配值“MDd_DynamicDebug”(Demo.obj 中)
+     1>LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
+     1>TradeCenter.lib(TradeBase.obj) : error LNK2019: 无法解析的外部符号 DES_ecb_encrypt，该符号在函数 "int __cdecl Encrypt_org(char *,char const *,char const *,char const *)" (?Encrypt_org@@YAHPEADPEBD11@Z) 中被引用
+     1>TradeCenter.lib(TradeBase.obj) : error LNK2019: 无法解析的外部符号 DES_set_key_checked，该符号在函数 "int __cdecl Encrypt_org(char *,char const *,char const *,char const *)" (?Encrypt_org@@YAHPEADPEBD11@Z) 中被引用
+     1>TradeCenter.lib(TradeBase.obj) : error LNK2019: 无法解析的外部符号 DES_string_to_key，该符号在函数 "int __cdecl Encrypt_org(char *,char const *,char const *,char const *)" (?Encrypt_org@@YAHPEADPEBD11@Z) 中被引用
+     1>TradeCenter.lib(TradeBase.obj) : error LNK2019: 无法解析的外部符号 BF_set_key，该符号在函数 "int __cdecl Encrypt_org(char *,char const *,char const *,char const *)" (?Encrypt_org@@YAHPEADPEBD11@Z) 中被引用
+     1>TradeCenter.lib(TradeBase.obj) : error LNK2019: 无法解析的外部符号 BF_cfb64_encrypt，该符号在函数 "int __cdecl Encrypt_org(char *,char const *,char const *,char const *)" (?Encrypt_org@@YAHPEADPEBD11@Z) 中被引用
+     1>E:\Workspace\TradeCenter\x64\Release\TradeStrategyDemo.exe : fatal error LNK1120: 5 个无法解析的外部命令
+     1>已完成生成项目“E:\Workspace\TradeCenter\TradeStrategyDemo\TradeStrategyDemo.vcxproj”(Rebuild 个目标)的操作 - 失败。
+
+生成失败。
+
+已用时间 00:00:06.81
