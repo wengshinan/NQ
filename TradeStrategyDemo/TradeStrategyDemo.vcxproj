@@ -92,7 +92,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;E:\Workspace\TradeCenter\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib\win32\debug;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\debug;E:\Workspace\TradeCenter\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>TradeCenter.lib;quickfix.lib;ws2_32.lib;libeay32MD.lib;TDFAPI25.lib;tdfapi_jni.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -110,8 +110,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;E:\Workspace\TradeCenter\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>TradeCenter.lib;quickfix.lib;ws2_32.lib;libeay32MD.lib;TDFAPI25.lib;tdfapi_jni.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib\x64;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static\x64;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\x64;E:\Workspace\TradeCenter\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>TradeCenter.lib;quickfix.lib;ws2_32.lib;libeay32.lib;TDFAPI25.lib;tdfapi_jni.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -154,23 +154,25 @@
       <FunctionLevelLinking>
       </FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\include;E:\Workspace\TradeCenter\ThirdParty\openssl\include;E:\Workspace\TradeCenter\ThirdParty\quickfix\include;E:\Workspace\TradeCenter\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <OmitFramePointers>false</OmitFramePointers>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>
       </EnableCOMDATFolding>
       <OptimizeReferences>
       </OptimizeReferences>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;E:\Workspace\TradeCenter\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>TradeCenter.lib;quickfix.lib;ws2_32.lib;libeay32MD.lib;TDFAPI25.lib;tdfapi_jni.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib\x64;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static\x64;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\x64;E:\Workspace\TradeCenter\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>quickfix.lib;ws2_32.lib;libeay32.lib;TDFAPI25.lib;tdfapi_jni.lib;TradeCenter.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
       <ImageHasSafeExceptionHandlers>

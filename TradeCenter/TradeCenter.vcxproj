@@ -109,7 +109,7 @@ del /F EXCLUDE
 </Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib\win32\debug;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32MD.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
@@ -140,8 +140,8 @@ del /F EXCLUDE
 </Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32MD.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib\x64;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static\x64;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -200,10 +200,12 @@ del /F EXCLUDE
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib\x64;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static\x64;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32MD.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib\x64;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static\x64;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
       <Command>echo test\ &gt; EXCLUDE
