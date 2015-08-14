@@ -13,3 +13,5 @@
 /Release
 
 /TradeCenter/Debug
+
+*.log
