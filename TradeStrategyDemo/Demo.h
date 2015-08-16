@@ -19,7 +19,7 @@ public:
 	int OnRespExecuteLimitOrder(AccountNo user, NQ::ExecuteResponse response);
 	int OnRespCancelLimitOrder(AccountNo user, NQ::CancelResponse response);
 	int OnRespOrderQuery(AccountNo user, NQ::OrderQueryResponse response);
-	int OnRespFundPosQuery(AccountNo user, NQ::FundPosQueryResponse response);
+	int OnRespFundPosQuery(AccountNo user, NQ::FundPosQueryMergeResponse response);
 
 
 

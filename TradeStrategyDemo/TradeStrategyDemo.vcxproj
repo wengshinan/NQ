@@ -86,13 +86,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\include;E:\Workspace\TradeCenter\ThirdParty\openssl\include;E:\Workspace\TradeCenter\ThirdParty\quickfix\include;E:\Workspace\TradeCenter\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\tdfapi\include;$(SolutionDir)ThirdParty\openssl\include;$(SolutionDir)ThirdParty\quickfix\include;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib\win32\debug;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\debug;E:\Workspace\TradeCenter\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\tdfapi\lib\win32\debug;$(SolutionDir)ThirdParty\openssl\lib\VC\static;$(SolutionDir)ThirdParty\quickfix\lib\debug;C:\Workspace\nq\NQ\ThirdParty\tradecenter\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>TradeCenter.lib;quickfix.lib;ws2_32.lib;libeay32MD.lib;TDFAPI25.lib;tdfapi_jni.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -125,7 +125,7 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\include;E:\Workspace\TradeCenter\ThirdParty\openssl\include;E:\Workspace\TradeCenter\ThirdParty\quickfix\include;E:\Workspace\TradeCenter\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\tdfapi\include;$(SolutionDir)ThirdParty\openssl\include;$(SolutionDir)ThirdParty\quickfix\include;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -139,8 +139,8 @@
       </EnableCOMDATFolding>
       <OptimizeReferences>
       </OptimizeReferences>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;E:\Workspace\TradeCenter\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>TradeCenter.lib;quickfix.lib;ws2_32.lib;libeay32MT.lib;TDFAPI25.lib;tdfapi_jni.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\tdfapi\lib\win32\release;$(SolutionDir)ThirdParty\openssl\lib\VC\static;$(SolutionDir)ThirdParty\quickfix\lib\release;$(SolutionDir)ThirdParty\tradecenter\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>TradeCenter.lib;quickfix.lib;ws2_32.lib;libeay32MT.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration />
       <ImageHasSafeExceptionHandlers />
     </Link>

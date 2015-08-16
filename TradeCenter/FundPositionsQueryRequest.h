@@ -215,24 +215,29 @@ namespace NQ
 		}
 
 		//合并多条UAP回单
-		static void mergeRespnse(FundPosQueryResponse &resp, std::list<FundPosQueryResponse> &resps)
+		static void mergeRespnse(FundPosQueryMergeResponse &resp, std::list<FundPosQueryResponse> &resps)
 		{
+			//循环检查执行插入所有stock的资金/股份对象
 			for (std::list<FundPosQueryResponse>::iterator it = resps.begin(); it != resps.end(); ++it)
 			{
+				//如果与当前所需的id一致
 				if ((*it).id == resp.id)
 				{
+					//创建stock信息对象StockFundPos，并插入股份或资金信息NoPosition/NoPosAmt
+					StockFundPos sfp((*it));
 					for (std::list<NoPosition>::iterator itn = (*it).positions.begin(); 
-						itn != (*it).positions.end(); ++itn)
+							itn != (*it).positions.end(); ++itn)
 					{
 						NoPosition tmpPosition(*itn);
-						resp.positions.push_back(tmpPosition);
+						sfp.positions.push_back(tmpPosition);
 					}
 					for (std::list<NoPosAmt>::iterator itn = (*it).amounts.begin(); 
 						itn != (*it).amounts.end(); ++itn)
 					{
 						NoPosAmt tmpAmt(*itn);
-						resp.amounts.push_back(tmpAmt);
+						sfp.amounts.push_back(tmpAmt);
 					}
+					resp.stockFundPoses.push_back(sfp);
 				}
 				FundPosQueryResponse itp = *it;
 				delete &itp;

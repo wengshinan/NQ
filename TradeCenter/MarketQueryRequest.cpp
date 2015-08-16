@@ -228,6 +228,7 @@ NQ::MarketQueryRequest::MarketQueryRequest(std::string strConfigFile){
 }
 
 NQ::MarketQueryRequest::~MarketQueryRequest(){
+	this->saveTodayMarket();
 	g_fsLog.flush();
 	g_fsLog.close();
 	m_marketCode.clear();
@@ -661,6 +662,7 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 
 void NQ::MarketQueryRequest::saveTodayMarket()
 {
+	g_marketReq->writeLog("写入每日收盘行情文件");
 	char today[32]  ="";
 	time_t time = std::time(NULL);
 	tm temptm;
@@ -682,16 +684,16 @@ void NQ::MarketQueryRequest::saveTodayMarket()
 		for (std::map<std::string, TDF_MARKET_DATA>::iterator it = m_marketData.begin(); it != m_marketData.end(); ++it)
 		{
 			t_data << it->second.szCode << "," 
-				<< it->second.nPreClose << ","
-				<< it->second.nOpen << ","
-				<< it->second.nHigh << ","
-				<< it->second.nLow << ","
-				<< it->second.nHighLimited << ","
-				<< it->second.nLowLimited << ","
-				<< it->second.nMatch << ","
+				<< (it->second.nPreClose * 1.0) / 10000 << ","
+				<< (it->second.nOpen * 1.0) / 10000 << ","
+				<< (it->second.nHigh * 1.0) / 10000 << ","
+				<< (it->second.nLow * 1.0) / 10000 << ","
+				<< (it->second.nHighLimited * 1.0) / 10000 << ","
+				<< (it->second.nLowLimited * 1.0) / 10000 << ","
+				<< (it->second.nMatch * 1.0) / 10000 << ","
 				<< it->second.nNumTrades << ","
 				<< it->second.iVolume << ","
-				<< it->second.iTurnover << std::endl;
+				<< (it->second.iTurnover * 1.0) / 10000 << std::endl;
 		}
 	}
 	if (m_marketData.size() > 0)
@@ -699,16 +701,16 @@ void NQ::MarketQueryRequest::saveTodayMarket()
 		for (std::map<std::string, TDF_INDEX_DATA>::iterator it = m_indexData.begin(); it != m_indexData.end(); ++it)
 		{
 			t_data << it->second.szCode << "," 
-				<< it->second.nPreCloseIndex << ","
-				<< it->second.nOpenIndex << ","
-				<< it->second.nHighIndex << ","
-				<< it->second.nLowIndex << ","
+				<< (it->second.nPreCloseIndex * 1.0) / 10000 << ","
+				<< (it->second.nOpenIndex * 1.0) / 10000 << ","
+				<< (it->second.nHighIndex * 1.0) / 10000 << ","
+				<< (it->second.nLowIndex * 1.0) / 10000 << ","
 				<< ","
 				<< ","
 				<< ","
 				<< ","
 				<< it->second.iTotalVolume << ","
-				<< it->second.iTurnover << std::endl;
+				<< (it->second.iTurnover * 1.0) / 10000 << std::endl;
 		}
 	}
 	t_data.flush();

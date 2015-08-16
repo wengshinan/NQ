@@ -354,6 +354,49 @@ namespace NQ{
 			response(response),
 			description(description){}
 	};
+
+	struct StockFundPos{
+		StockCode				stock;
+		Currency				currency;
+		MarketCode				market;
+		ShareHolderCode			account;
+		Positions				positions;
+		Amounts					amounts;
+		StockFundPos(){}
+		StockFundPos(
+			StockCode stock,
+			Currency currency,
+			MarketCode market,
+			ShareHolderCode account)
+			:stock(stock),
+			currency(currency),
+			market(market),
+			account(account){}
+		StockFundPos(
+			FundPosQueryResponse resp)
+			:stock(resp.stock),
+			currency(resp.currency),
+			market(resp.market),
+			account(resp.account){}
+	};
+
+	typedef std::list<StockFundPos> StockFundPoses;
+
+	//资金股份查询汇集后的结果
+	struct FundPosQueryMergeResponse{
+		FundPosRespId			id;				//资金股份查询请求号，与查询请求对应
+		FundPosReqType			type;			//请求类别
+		RespCode				response;		//请求状态，成功/失败
+		RetMessage				description;	//失败说明
+		StockFundPoses			stockFundPoses;
+		FundPosQueryMergeResponse(){}
+		FundPosQueryMergeResponse(
+			FundPosQueryResponse pos)
+			:id(pos.id),
+			type(pos.type),
+			response(pos.response),
+			description(pos.description){}
+	};
 }
 
 #endif

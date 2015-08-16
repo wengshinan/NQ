@@ -26,7 +26,7 @@ namespace NQ{
 		//持仓查询回报回调
 		virtual int OnRespOrderQuery(AccountNo user, OrderQueryResponse response)=0;
 		//资金股份查询回报回调
-		virtual int OnRespFundPosQuery(AccountNo user, FundPosQueryResponse response)=0;
+		virtual int OnRespFundPosQuery(AccountNo user, FundPosQueryMergeResponse response)=0;
 	};
 
 	__interface IUser

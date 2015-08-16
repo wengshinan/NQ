@@ -38,7 +38,7 @@ namespace NQ{
 		void callBack(OrderQueryResponse &ordQryResp, AccountNo user);
 		//请求资金股份查询
 		void reqFundPosQry(FundPosQuery& query, AccountNo user);
-		void callBack(FundPosQueryResponse &fundPosQryResp, AccountNo user);
+		void callBack(FundPosQueryMergeResponse &fundPosQryResp, AccountNo user);
 
 
 	private:

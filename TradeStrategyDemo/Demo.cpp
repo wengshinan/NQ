@@ -78,16 +78,13 @@ int Demo::OnRespOrderQuery(AccountNo user, NQ::OrderQueryResponse response)
 	std::cout<<"response.leavesNum: "<<response.leavesNum<<std::endl;
 	return 1;
 }
-int Demo::OnRespFundPosQuery(AccountNo user, NQ::FundPosQueryResponse response)
+int Demo::OnRespFundPosQuery(AccountNo user, NQ::FundPosQueryMergeResponse response)
 {
 	std::cout<<"OnRespFundPosQuery"<<std::endl;
 	std::cout<<"response.id: "<<response.id<<std::endl;
-	std::cout<<"response.account: "<<response.account<<std::endl;
-	std::cout<<"response.currency: "<<response.currency<<std::endl;
-	std::cout<<"response.description: "<<response.description<<std::endl;
-	std::cout<<"response.market: "<<response.market<<std::endl;
-	std::cout<<"response.stock: "<<response.stock<<std::endl;
 	std::cout<<"response.type: "<<response.type<<std::endl;
+	std::cout<<"response.description: "<<response.description<<std::endl;
+	std::cout<<"response.stockFundPos quantity: "<<response.stockFundPoses.size()<<std::endl;
 	return 1;
 }
 

@@ -118,6 +118,9 @@ void NQ::TradeCenter::callBack(OrderQueryResponse &ordQryResp, AccountNo user){
 	this->orderCaller->OnRespOrderQuery(user, ordQryResp);
 }
 
-void NQ::TradeCenter::callBack(FundPosQueryResponse &fundPosQryResp, AccountNo user){
+void NQ::TradeCenter::callBack(FundPosQueryMergeResponse &fundPosQryResp, AccountNo user){
+	std::cout << "回调函数入口" << std::endl;
+	std::cout << "user: " << user << std::endl;
+	std::cout << "fundPosQryResp.id: " << fundPosQryResp.id << std::endl;
 	this->orderCaller->OnRespFundPosQuery(user, fundPosQryResp);
 }

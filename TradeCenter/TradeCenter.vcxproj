@@ -90,7 +90,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\include;E:\Workspace\quickfix\include;E:\Workspace\TradeCenter\ThirdParty\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\tdfapi\include;$(SolutionDir)ThirdParty\quickfix\include;$(SolutionDir)ThirdParty\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -109,8 +109,9 @@ del /F EXCLUDE
 </Command>
     </PostBuildEvent>
     <Lib>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib\win32\debug;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\tdfapi\lib\win32\debug;$(SolutionDir)ThirdParty\openssl\lib\VC\static;$(SolutionDir)ThirdParty\quickfix\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32MD.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(SolutionDir)ThirdParty\tradecenter\debug\$(TargetName)$(TargetExt)</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -155,7 +156,7 @@ del /F EXCLUDE
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\include;E:\Workspace\quickfix\include;E:\Workspace\TradeCenter\ThirdParty\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\tdfapi\include;$(SolutionDir)ThirdParty\quickfix\include;$(SolutionDir)ThirdParty\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -168,14 +169,20 @@ del /F EXCLUDE
     </Link>
     <Lib>
       <AdditionalDependencies>ws2_32.lib;quickfix.lib;libeay32MT.lib;TDFAPI25.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>E:\Workspace\TradeCenter\ThirdParty\tdfapi\lib;E:\Workspace\TradeCenter\ThirdParty\openssl\lib\VC\static;E:\Workspace\TradeCenter\ThirdParty\quickfix\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\quickfix\lib\release;$(SolutionDir)ThirdParty\tdfapi\lib\win32\release;$(SolutionDir)ThirdParty\openssl\lib\VC\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(SolutionDir)ThirdParty\tradecenter\release\$(TargetName)$(TargetExt)</OutputFile>
     </Lib>
     <PostBuildEvent>
       <Command>echo test\ &gt; EXCLUDE
+
 echo stdafx.h &gt;&gt; EXCLUDE
+
 echo release\ &gt;&gt; EXCLUDE
+
 echo debug\ &gt;&gt; EXCLUDE
+
 xcopy *.h /S/Y/E/I /EXCLUDE:EXCLUDE ..\include\TradeCenter
+
 del /F EXCLUDE
 </Command>
     </PostBuildEvent>
@@ -239,16 +246,6 @@ del /F EXCLUDE
     <ClCompile Include="TradeApplication.cpp" />
     <ClCompile Include="TradeBase.cpp" />
     <ClCompile Include="TradeCenter.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\quickfix\src\C++\quickfix_vs11.vcxproj">
-      <Project>{d5d558ea-bbac-4862-a946-d3881bace3b7}</Project>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

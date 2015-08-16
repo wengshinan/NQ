@@ -152,11 +152,13 @@ void NQ::TradeApplication::fromApp( const FIX::Message &message, const FIX::Sess
 		case RespType::FundQueryResultType:
 		case RespType::StockQueryResultType:
 			{
+				g_log->onEvent("查询股份缓冲池中写入第" + std::to_string(g_fundPosQryResps.size()) + "条记录" );
 				FundPosQueryResponse fundPosQryResp = FundPositionsQueryRequest::genFundPosQryResponse(message);
 				this->g_fundPosQryResps.push_back(fundPosQryResp);
 				if (FundPositionsQueryRequest::isSingleReport(message)
 					|| FundPositionsQueryRequest::isLastReport(message))
 				{
+					g_log->onEvent("获取查询股份返回的最后一条记录");
 					CLock cl(&g_cs_r);
 					if (!isRecvThreadRunning() ){
 						std::thread tmpThread(&TradeApplication::receveThread, this);
@@ -286,6 +288,7 @@ bool NQ::TradeApplication::isRespCorresponant(const FIX::Message &message)
 				if (FundPositionsQueryRequest::isSingleReport(message)
 					|| FundPositionsQueryRequest::isLastReport(message))
 				{
+					g_log->onEvent("唯一一条或者多条的最后一条，删除请求列表中该请求");
 					delete it->second;
 					g_orders.erase(it);
 				}
@@ -493,7 +496,7 @@ void NQ::TradeApplication::receveThread(){
 	{
 		CLock cl(&g_cs_r);
 		OrderResponse ordResp = g_ordResps.front();
-		g_log->onEvent("Call back" + ordResp.id);
+		g_log->onEvent("Call back " + ordResp.id);
 		c_tradeCenter->callBack(ordResp, g_user.accountNo);
 		g_ordResps.pop_front();
 	}
@@ -501,7 +504,7 @@ void NQ::TradeApplication::receveThread(){
 	{
 		CLock cl(&g_cs_r);
 		ExecuteResponse execResp = g_execResps.front();
-		g_log->onEvent("Call back" + execResp.id);
+		g_log->onEvent("Call back " + execResp.id);
 		c_tradeCenter->callBack(execResp, g_user.accountNo);
 		g_execResps.pop_front();
 	}
@@ -509,7 +512,7 @@ void NQ::TradeApplication::receveThread(){
 	{
 		CLock cl(&g_cs_r);
 		CancelResponse cancResp = g_cancResps.front();
-		g_log->onEvent("Call back" + cancResp.orderId);
+		g_log->onEvent("Call back " + cancResp.orderId);
 		c_tradeCenter->callBack(cancResp, g_user.accountNo);
 		g_cancResps.pop_front();
 	}
@@ -517,20 +520,24 @@ void NQ::TradeApplication::receveThread(){
 	{
 		CLock cl(&g_cs_r);
 		OrderQueryResponse ordQryResp = g_ordQryResps.front();
-		g_log->onEvent("Call back" + ordQryResp.orderId);
+		g_log->onEvent("Call back " + ordQryResp.orderId);
 		c_tradeCenter->callBack(ordQryResp, g_user.accountNo);
 		g_ordQryResps.pop_front();
 	}
 	while (!g_fundPosQryResps.empty() && c_tradeCenter)
 	{
+		g_log->onEvent("获取最后一条记录，合并股份全集");
 		CLock cl(&g_cs_r);
 		//全集报告合并
 		FundPosQueryResponse fundPosQryResp = g_fundPosQryResps.back();
 		g_fundPosQryResps.pop_back();
-		FundPositionsQueryRequest::mergeRespnse(fundPosQryResp, this->g_fundPosQryResps);
+		FundPosQueryMergeResponse resp(fundPosQryResp);
+		FundPositionsQueryRequest::mergeRespnse(resp, this->g_fundPosQryResps);
 
-		g_log->onEvent("Call back" + fundPosQryResp.id);
-		c_tradeCenter->callBack(fundPosQryResp, g_user.accountNo);
+		g_log->onEvent("一共返回" + std::to_string(fundPosQryResp.positions.size()) + "条股份记录");
+		g_log->onEvent("Call back " + fundPosQryResp.id);
+		g_log->onEvent("g_user: " + g_user.accountNo + " password: " + g_user.password + " type: " + std::to_string(g_user.type));
+		c_tradeCenter->callBack(resp, g_user.accountNo);
 		//g_fundPosQryResps.pop_front();
 	}
 	g_rThread = NULL;
