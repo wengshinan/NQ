@@ -3,3 +3,4 @@ Debug
 Release
 sfc_os.pdb
 *.sdf
+*.opensdf
