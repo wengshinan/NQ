@@ -19,3 +19,4 @@
 /TradeStrategyDemo/Release/*.pdb
 /TradeCenter/Release
 *.log
+/TradeStrategyDemo/Release
