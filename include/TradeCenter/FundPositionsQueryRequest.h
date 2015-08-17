@@ -217,7 +217,7 @@ namespace NQ
 		//合并多条UAP回单
 		static void mergeRespnse(FundPosQueryMergeResponse &resp, std::list<FundPosQueryResponse> &resps)
 		{
-			//循环检查执行插入所有资金/股份对象
+			//循环检查执行插入所有stock的资金/股份对象
 			for (std::list<FundPosQueryResponse>::iterator it = resps.begin(); it != resps.end(); ++it)
 			{
 				//如果与当前所需的id一致
