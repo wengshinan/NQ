@@ -401,7 +401,7 @@ void NQ::MarketQueryRequest::RecvData(THANDLE hTdf, TDF_MSG* pMsgHead)
 
 			static __time64_t nLastUpdateTime = 0;
 
-			// TODO
+			g_marketReq->writeLog("获取市场行情" + std::to_string(pMsgHead->pAppHead->nItemCount) + "条记录");
 			//循环处理返回行情
 			for (int i = 0; i < nItemCount; i++)
 			{
@@ -433,7 +433,8 @@ void NQ::MarketQueryRequest::RecvData(THANDLE hTdf, TDF_MSG* pMsgHead)
 	case MSG_DATA_INDEX:
 		{
 			assert(nItemSize == sizeof(TDF_INDEX_DATA));
-
+			
+			g_marketReq->writeLog("获取指数行情" + std::to_string(pMsgHead->pAppHead->nItemCount) + "条记录");
 			for (int i = 0; i < nItemCount; i++)
 			{
 				TDF_INDEX_DATA* pLastIndex = GETRECORD(pMsgHead->pData,TDF_INDEX_DATA, i);
@@ -629,6 +630,7 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 	case MSG_SYS_CODETABLE_RESULT:
 		{
 			TDF_CODE_RESULT* pCodeResult = (TDF_CODE_RESULT*)pSysMsg->pData;
+			g_marketReq->writeLog("获取" + std::to_string(pCodeResult->nMarkets) + "个市场的代码表");
 			if (pCodeResult )
 			{
 				for (int i=0; i<pCodeResult->nMarkets; i++)
@@ -673,6 +675,7 @@ void NQ::MarketQueryRequest::saveTodayMarket()
 	strDataPath += "行情数据文件.txt";
 
 	std::ofstream t_data = initDataFile(strDataPath, true);
+	t_data.setf(std::ios::fixed, std::ios::floatfield);
 	//g_fsData.open(strDataPath.c_str(), std::ios_base::out);
 	if (!t_data.is_open())
 	{
