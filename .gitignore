@@ -16,3 +16,13 @@
 
 *.log
 /TradeCenter.sdf
+/TradeCenter/Release/*.tlog
+/TradeCenter/Release/*.obj
+/TradeCenter/Release/*.lastbuildstate
+/TradeCenter/Release/*.idb
+/TradeCenter/Release/*.pdb
+/TradeStrategyDemo/Release/*.tlog
+/TradeStrategyDemo/Release/*.obj
+/TradeStrategyDemo/Release/*.lastbuildstate
+/TradeStrategyDemo/Release/*.idb
+/TradeStrategyDemo/Release/*.pdb
