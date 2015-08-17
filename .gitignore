@@ -5,8 +5,7 @@
 /TradeCenter/Release
 /TradeStrategyDemo/Debug
 /TradeStrategyDemo/Release
-/TradeCenter.sdf
 /sfc_os.pdb
-/TradeCenter.sdf
 /TradeCenter.opensdf
 *.log
+*.sdf
