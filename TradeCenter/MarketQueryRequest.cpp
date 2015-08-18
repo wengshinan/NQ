@@ -401,7 +401,7 @@ void NQ::MarketQueryRequest::RecvData(THANDLE hTdf, TDF_MSG* pMsgHead)
 
 			static __time64_t nLastUpdateTime = 0;
 
-			g_marketReq->writeLog("获取市场行情" + std::to_string(pMsgHead->pAppHead->nItemCount) + "条记录");
+			//g_marketReq->writeLog("获取市场行情" + std::to_string(nItemCount) + "条记录");
 			//循环处理返回行情
 			for (int i = 0; i < nItemCount; i++)
 			{
@@ -434,15 +434,24 @@ void NQ::MarketQueryRequest::RecvData(THANDLE hTdf, TDF_MSG* pMsgHead)
 		{
 			assert(nItemSize == sizeof(TDF_INDEX_DATA));
 			
-			g_marketReq->writeLog("获取指数行情" + std::to_string(pMsgHead->pAppHead->nItemCount) + "条记录");
+			//g_marketReq->writeLog("获取指数行情" + std::to_string(nItemCount) + "条记录");
 			for (int i = 0; i < nItemCount; i++)
 			{
 				TDF_INDEX_DATA* pLastIndex = GETRECORD(pMsgHead->pData,TDF_INDEX_DATA, i);
 				std::string szWindCode = std::string(pLastIndex->szWindCode);
-				if (m_indexData.find(szWindCode)!=m_indexData.end()){
+				/*
+				if (m_indexData.find(szWindCode)!= m_indexData.end()){
 					m_indexData.erase(m_indexData.find(szWindCode));
 				}
-				m_indexData.insert(std::map<std::string, TDF_INDEX_DATA>::value_type(szWindCode, *pLastIndex));
+				*/
+				if (m_indexData.find(szWindCode)!= m_indexData.end()){
+					if (!dataModified(*pLastIndex)) {
+						continue;
+					}
+				}else
+				{
+					m_indexData.insert(std::map<std::string, TDF_INDEX_DATA>::value_type(szWindCode, *pLastIndex));
+				}
 				
 				NQ_ET::SQuote tickData = getTickData(*pLastIndex);
 				while (g_marketReq->m_threadCnt > g_marketReq->max_threadCnt)
@@ -530,7 +539,11 @@ NQ_ET::SQuote NQ::MarketQueryRequest::getTickData(TDF_INDEX_DATA& data)
 NQ_ET::SQuote NQ::MarketQueryRequest::getTickData(TDF_MARKET_DATA& data)
 {
 	std::string szWindCode = data.szWindCode;
-	std::string name = m_marketCode.find(szWindCode)->second;
+	std::map<std::string, std::string>::iterator it = m_marketCode.find(szWindCode);
+	std::string name = "";
+	if ( it != m_marketCode.end()){
+		name = it->second;
+	} 
 
 	int dotPos = szWindCode.find('.');
 	std::string market = szWindCode.substr(dotPos+1,szWindCode.length()-dotPos-1);
@@ -630,7 +643,7 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 	case MSG_SYS_CODETABLE_RESULT:
 		{
 			TDF_CODE_RESULT* pCodeResult = (TDF_CODE_RESULT*)pSysMsg->pData;
-			g_marketReq->writeLog("获取" + std::to_string(pCodeResult->nMarkets) + "个市场的代码表");
+			//g_marketReq->writeLog("获取" + std::to_string(pCodeResult->nMarkets) + "个市场的代码表");
 			if (pCodeResult )
 			{
 				for (int i=0; i<pCodeResult->nMarkets; i++)
@@ -665,6 +678,7 @@ void NQ::MarketQueryRequest::RecvSys(THANDLE hTdf, TDF_MSG* pSysMsg)
 void NQ::MarketQueryRequest::saveTodayMarket()
 {
 	g_marketReq->writeLog("写入每日收盘行情文件");
+	g_marketReq->writeLog("共有" + std::to_string(m_marketData.size()) + "条市场行情记录");
 	char today[32]  ="";
 	time_t time = std::time(NULL);
 	tm temptm;
@@ -699,7 +713,8 @@ void NQ::MarketQueryRequest::saveTodayMarket()
 				<< (it->second.iTurnover * 1.0) / 10000 << std::endl;
 		}
 	}
-	if (m_marketData.size() > 0)
+	g_marketReq->writeLog("共有" + std::to_string(m_indexData.size()) + "条指数行情记录");
+	if (m_indexData.size() > 0)
 	{
 		for (std::map<std::string, TDF_INDEX_DATA>::iterator it = m_indexData.begin(); it != m_indexData.end(); ++it)
 		{
@@ -740,6 +755,22 @@ bool NQ::MarketQueryRequest::dataModified(TDF_MARKET_DATA recentData){
 	Util::ifNotCmpThenCpy(recentData.iTurnover, preData.iTurnover, flag);
 	Util::ifNotCmpThenCpy(recentData.nHighLimited, preData.nHighLimited, flag);
 	Util::ifNotCmpThenCpy(recentData.nLowLimited, preData.nLowLimited, flag);
+
+	return flag;
+}
+
+bool NQ::MarketQueryRequest::dataModified(TDF_INDEX_DATA recentData){
+	bool flag = false;
+	TDF_INDEX_DATA& preData = m_indexData.find(std::string(recentData.szWindCode))->second;
+
+	Util::ifNotCmpThenCpy(recentData.szCode, preData.szCode, flag, 31);
+	Util::ifNotCmpThenCpy(recentData.nOpenIndex, preData.nOpenIndex, flag);
+	Util::ifNotCmpThenCpy(recentData.nHighIndex, preData.nHighIndex, flag);
+	Util::ifNotCmpThenCpy(recentData.nLowIndex, preData.nLowIndex, flag);
+	Util::ifNotCmpThenCpy(recentData.nLastIndex, preData.nLastIndex, flag);
+	Util::ifNotCmpThenCpy(recentData.iTotalVolume, preData.iTotalVolume, flag);
+	Util::ifNotCmpThenCpy(recentData.iTurnover, preData.iTurnover, flag);
+	Util::ifNotCmpThenCpy(recentData.nPreCloseIndex, preData.nPreCloseIndex, flag);
 
 	return flag;
 }
