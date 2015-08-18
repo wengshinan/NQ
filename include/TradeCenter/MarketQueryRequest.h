@@ -166,6 +166,7 @@ namespace NQ{
 
 	private:
 		static bool dataModified(TDF_MARKET_DATA recentData);
+		static bool dataModified(TDF_INDEX_DATA recentData);
 		static NQ_ET::EListedExchange findMarket(std::string market);
 		static NQ_ET::SQuote getTickData(TDF_MARKET_DATA& marketData);
 		static NQ_ET::SQuote getTickData(TDF_INDEX_DATA& indexData);

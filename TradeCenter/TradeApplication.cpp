@@ -152,13 +152,13 @@ void NQ::TradeApplication::fromApp( const FIX::Message &message, const FIX::Sess
 		case RespType::FundQueryResultType:
 		case RespType::StockQueryResultType:
 			{
-				g_log->onEvent("查询股份缓冲池中写入第" + std::to_string(g_fundPosQryResps.size()) + "条记录" );
+				//g_log->onEvent("查询股份缓冲池中写入第" + std::to_string(g_fundPosQryResps.size()) + "条记录" );
 				FundPosQueryResponse fundPosQryResp = FundPositionsQueryRequest::genFundPosQryResponse(message);
 				this->g_fundPosQryResps.push_back(fundPosQryResp);
 				if (FundPositionsQueryRequest::isSingleReport(message)
 					|| FundPositionsQueryRequest::isLastReport(message))
 				{
-					g_log->onEvent("获取查询股份返回的最后一条记录");
+					g_log->onEvent("获取查询股份/资金返回的最后一条记录");
 					CLock cl(&g_cs_r);
 					if (!isRecvThreadRunning() ){
 						std::thread tmpThread(&TradeApplication::receveThread, this);
